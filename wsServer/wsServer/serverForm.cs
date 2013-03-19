@@ -18,8 +18,8 @@ namespace wsServer
         {
             InitializeComponent();
 
-            moduleMannager.moduleList.Add("gps", this.ckbGPS);
-            moduleMannager.moduleList.Add("uhf", this.ckbUHF);
+            //moduleMannager.moduleList.Add("gps", this.ckbGPS);
+            //moduleMannager.moduleList.Add("uhf", this.ckbUHF);
 
             this.button2.Enabled = false;
         }
@@ -58,7 +58,6 @@ namespace wsServer
 
         private void button3_Click(object sender, EventArgs e)
         {
-
             WebSocketService service = services.get_service("gps");
 
             service.Send(this.textBox1.Text);

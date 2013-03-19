@@ -62,6 +62,8 @@
     <Compile Include="Module\Chat.cs" />
     <Compile Include="Module\Echo.cs" />
     <Compile Include="Module\GPS.cs" />
+    <Compile Include="Module\TDJ_RFIDHelper.cs" />
+    <Compile Include="Module\UDPServer.cs" />
     <Compile Include="Module\UHF.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
