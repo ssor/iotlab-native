@@ -14,13 +14,34 @@ namespace Server
     public class UDPServer
     {
         public event OnReceiveString evtReceived;
-
+        public static Dictionary<int, UDPServer> UDPServerList = new Dictionary<int, UDPServer>();
         BackgroundWorker backgroundWorker1 = new BackgroundWorker();
         ManualResetEvent Manualstate = new ManualResetEvent(true);
         StringBuilder sbuilder = new StringBuilder();
         Socket serverSocket;
         byte[] byteData = new byte[1024];
         int port = 9001;
+        bool RunningState = false;
+
+        public static UDPServer getUDPServer(int port)
+        {
+            UDPServer server = null;
+            if (!UDPServerList.ContainsKey(port))
+            {
+                server = new UDPServer(port);
+                UDPServer.UDPServerList.Add(port, server);
+            }
+            else
+            {
+                server = UDPServer.UDPServerList[port];
+            }
+            return server;
+        }
+
+        public UDPServer(int port)
+        {
+            this.port = port;
+        }
         public void stopUDPListening()
         {
             if (serverSocket != null)
@@ -37,10 +58,12 @@ namespace Server
                 }
             }
         }
-        public Socket startUDPListening(int iPort)
+        public void startUDPListening()
         {
-
-            this.port = iPort;
+            if (this.RunningState)
+            {
+                return;
+            }
             backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundThreadWork);
             try
             {
@@ -66,6 +89,8 @@ namespace Server
                 //The epSender identifies the incoming clients
                 EndPoint epSender = (EndPoint)ipeSender;
 
+                RunningState = true;
+
                 //Start receiving data
                 serverSocket.BeginReceiveFrom(byteData, 0, byteData.Length,
                     SocketFlags.None, ref epSender, new AsyncCallback(OnReceive), epSender);
@@ -80,7 +105,6 @@ namespace Server
                     string.Format("UDPServer.startUDPListening  -> error = {0}"
                     , ex.Message));
             }
-            return serverSocket;
         }
         public void OnReceive(IAsyncResult ar)
         {

@@ -24,9 +24,9 @@ namespace ModuleService
             rfid_helper = new TDJ_RFIDHelper();
 
             //打开UDP端口，等待数据传入
-            this.updServer = new UDPServer();
+            this.updServer = UDPServer.getUDPServer(3001);
             updServer.evtReceived += new OnReceiveString(updServer_evtReceived);
-            updServer.startUDPListening(3001);
+            updServer.startUDPListening();
         }
 
         void updServer_evtReceived(string str)
@@ -36,10 +36,9 @@ namespace ModuleService
             if (list.Count > 0)
             {
                 this.Send(list[0].epc);
-
             }
         }
-        protected override void OnMessage(object sender, MessageEventArgs e)
+        protected override void OnMessage(MessageEventArgs e)
         {
             var msg = e.Data;
             Debug.WriteLine(string.Format("UHF OnMessage => {0}", msg));
@@ -47,7 +46,7 @@ namespace ModuleService
             {
                 command cmd = (command)JsonConvert.DeserializeObject(msg, typeof(command));
                 Debug.WriteLine(cmd.print_string());
-                Send(cmd.print_string());
+                //Send(cmd.print_string());
                 switch (cmd.Name)
                 {
                     case "open":
@@ -62,6 +61,11 @@ namespace ModuleService
             {
                 Debug.WriteLine("parse error!");
             }
+        }
+        protected override void OnClose(CloseEventArgs e)
+        {
+            this.updServer.evtReceived -= updServer_evtReceived;
+            base.OnClose(e);
         }
     }
 }

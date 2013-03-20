@@ -10,6 +10,8 @@ namespace ModuleCommand
     {
         public string Name;
         public string Para;
+        public string Commander;//·¢ÆğÃüÁîÕß
+
         public command(string _name, string _para)
         {
             this.Name = _name;

@@ -7,7 +7,7 @@ namespace wsServer
 
     public class Echo : WebSocketService
     {
-        protected override void OnMessage(object sender, MessageEventArgs e)
+        protected override void OnMessage(MessageEventArgs e)
         {
             var msg = e.Data;
             Console.WriteLine(string.Format("OnMessage => {0}", msg));

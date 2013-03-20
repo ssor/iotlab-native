@@ -41,9 +41,10 @@ namespace wsServer
         private void button1_Click(object sender, EventArgs e)
         {
             wssv = new WebSocketServer(4649);
-            wssv.AddService<Echo>("/Echo");
-            wssv.AddService<GPS>("/gps");
-            wssv.AddService<UHF>("/uhf");
+            wssv.AddWebSocketService<Echo>("/Echo");
+            wssv.AddWebSocketService<GPS>("/gps");
+            wssv.AddWebSocketService<UHF>("/uhf");
+            wssv.AddWebSocketService<Light>("/light");
             wssv.Start();
             this.button2.Enabled = true;
             this.button1.Enabled = false;

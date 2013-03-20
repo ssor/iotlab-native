@@ -17,7 +17,7 @@ namespace ModuleService
         {
             services.register_service("gps", this);
         }
-        protected override void OnMessage(object sender, MessageEventArgs e)
+        protected override void OnMessage(MessageEventArgs e)
         {
             var msg = e.Data;
             Debug.WriteLine(string.Format("GPS OnMessage => {0}", msg));
