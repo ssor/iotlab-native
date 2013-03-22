@@ -24,7 +24,8 @@ namespace ModuleService
         {
             if (Light.recently_broadcast != string.Empty)
             {
-                this.Broadcast(recently_broadcast);
+                //this.Broadcast(recently_broadcast);
+                this.Send(recently_broadcast);
             }
         }
         protected override void OnMessage(MessageEventArgs e)
