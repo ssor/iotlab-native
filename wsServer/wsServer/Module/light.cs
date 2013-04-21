@@ -13,16 +13,16 @@ using System.Collections.Generic;
 namespace ModuleService
 {
 
-    public class Light : WebSocketService
+    public class LightService : WebSocketService
     {
         public static string recently_broadcast = string.Empty;
-        public Light()
+        public LightService()
         {
             services.register_service("light", this);
         }
         protected override void OnOpen()
         {
-            if (Light.recently_broadcast != string.Empty)
+            if (LightService.recently_broadcast != string.Empty)
             {
                 //this.Broadcast(recently_broadcast);
                 this.Send(recently_broadcast);
@@ -42,14 +42,14 @@ namespace ModuleService
                     case "open":
                         Debug.WriteLine(string.Format("{0} 打开智能灯", cmd.Commander));
                         command ncOpen = new command("open", string.Format("{0}打开了灯", cmd.Commander));
-                        Light.recently_broadcast = JsonConvert.SerializeObject(ncOpen);
-                        this.Broadcast(Light.recently_broadcast);
+                        LightService.recently_broadcast = JsonConvert.SerializeObject(ncOpen);
+                        this.Broadcast(LightService.recently_broadcast);
                         break;
                     case "close":
                         Debug.WriteLine(string.Format("{0} 关闭智能灯", cmd.Commander));
                         command ncClose = new command("close", string.Format("{0}关闭了灯", cmd.Commander));
-                        Light.recently_broadcast = JsonConvert.SerializeObject(ncClose);
-                        this.Broadcast(Light.recently_broadcast);
+                        LightService.recently_broadcast = JsonConvert.SerializeObject(ncClose);
+                        this.Broadcast(LightService.recently_broadcast);
                         //this.Broadcast(JsonConvert.SerializeObject(ncClose));
                         break;
                 }

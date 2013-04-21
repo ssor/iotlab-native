@@ -58,6 +58,8 @@
     <Compile Include="Module\Chat.cs" />
     <Compile Include="Module\Echo.cs" />
     <Compile Include="Module\GPS.cs" />
+    <Compile Include="Module\NMEA2OSG.cs" />
+    <Compile Include="Module\NmeaInterpreter.cs" />
     <Compile Include="Module\TDJ_RFIDHelper.cs" />
     <Compile Include="Module\UDPServer.cs" />
     <Compile Include="Module\UHF.cs" />

@@ -42,9 +42,9 @@ namespace wsServer
         {
             wssv = new WebSocketServer(4649);
             wssv.AddWebSocketService<Echo>("/Echo");
-            wssv.AddWebSocketService<GPS>("/gps");
-            wssv.AddWebSocketService<UHF>("/uhf");
-            wssv.AddWebSocketService<Light>("/light");
+            wssv.AddWebSocketService<GPSService>("/gps");
+            wssv.AddWebSocketService<UHFService>("/uhf");
+            wssv.AddWebSocketService<LightService>("/light");
             wssv.Start();
             this.button2.Enabled = true;
             this.button1.Enabled = false;

@@ -13,11 +13,11 @@ using System.Collections.Generic;
 namespace ModuleService
 {
 
-    public class UHF : WebSocketService
+    public class UHFService : WebSocketService
     {
         UDPServer updServer;
         TDJ_RFIDHelper rfid_helper;
-        public UHF()
+        public UHFService()
         {
             services.register_service("uhf", this);
 

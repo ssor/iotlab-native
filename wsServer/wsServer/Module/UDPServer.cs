@@ -15,7 +15,6 @@ namespace Server
     {
         public event OnReceiveString evtReceived;
         public static Dictionary<int, UDPServer> UDPServerList = new Dictionary<int, UDPServer>();
-        BackgroundWorker backgroundWorker1 = new BackgroundWorker();
         ManualResetEvent Manualstate = new ManualResetEvent(true);
         StringBuilder sbuilder = new StringBuilder();
         Socket serverSocket;
@@ -64,7 +63,6 @@ namespace Server
             {
                 return;
             }
-            backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundThreadWork);
             try
             {
                 {
@@ -163,7 +161,14 @@ namespace Server
         }
         void HandleEventInNewThread(string _str)
         {
-            backgroundWorker1.RunWorkerAsync(_str);
+            OnReceiveString evt = this.evtReceived;
+            if (evt != null)
+            {
+                evt(_str);
+            }
+            //BackgroundWorker backgroundWorker1 = new BackgroundWorker();
+            //backgroundWorker1.DoWork += new DoWorkEventHandler(BackgroundThreadWork);
+            //backgroundWorker1.RunWorkerAsync(_str);
         }
         string GetLocalIP4()
         {
