@@ -35,8 +35,10 @@
             this.txtLog = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.ckbGPS = new System.Windows.Forms.CheckBox();
             this.ckbUHF = new System.Windows.Forms.CheckBox();
+            this.ckbGPS = new System.Windows.Forms.CheckBox();
+            this.button4 = new System.Windows.Forms.Button();
+            this.btnTestCmd = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -110,16 +112,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "设备状态";
             // 
-            // ckbGPS
-            // 
-            this.ckbGPS.AutoSize = true;
-            this.ckbGPS.Location = new System.Drawing.Point(14, 23);
-            this.ckbGPS.Name = "ckbGPS";
-            this.ckbGPS.Size = new System.Drawing.Size(42, 16);
-            this.ckbGPS.TabIndex = 0;
-            this.ckbGPS.Text = "GPS";
-            this.ckbGPS.UseVisualStyleBackColor = true;
-            // 
             // ckbUHF
             // 
             this.ckbUHF.AutoSize = true;
@@ -130,11 +122,43 @@
             this.ckbUHF.Text = "UHF";
             this.ckbUHF.UseVisualStyleBackColor = true;
             // 
+            // ckbGPS
+            // 
+            this.ckbGPS.AutoSize = true;
+            this.ckbGPS.Location = new System.Drawing.Point(14, 23);
+            this.ckbGPS.Name = "ckbGPS";
+            this.ckbGPS.Size = new System.Drawing.Size(42, 16);
+            this.ckbGPS.TabIndex = 0;
+            this.ckbGPS.Text = "GPS";
+            this.ckbGPS.UseVisualStyleBackColor = true;
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(123, 101);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.TabIndex = 8;
+            this.button4.Text = "测试";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // btnTestCmd
+            // 
+            this.btnTestCmd.Location = new System.Drawing.Point(237, 100);
+            this.btnTestCmd.Name = "btnTestCmd";
+            this.btnTestCmd.Size = new System.Drawing.Size(75, 23);
+            this.btnTestCmd.TabIndex = 9;
+            this.btnTestCmd.Text = "命令匹配";
+            this.btnTestCmd.UseVisualStyleBackColor = true;
+            this.btnTestCmd.Click += new System.EventHandler(this.btnTestCmd_Click);
+            // 
             // serverForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(571, 505);
+            this.Controls.Add(this.btnTestCmd);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button3);
@@ -163,5 +187,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox ckbUHF;
         private System.Windows.Forms.CheckBox ckbGPS;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button btnTestCmd;
     }
 }
