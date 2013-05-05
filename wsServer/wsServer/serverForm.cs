@@ -12,6 +12,8 @@ using System.Net.Sockets;
 using System.Net;
 using System.Diagnostics;
 using ModuleCommand;
+using com.google.zxing.common;
+using com.google.zxing;
 
 namespace wsServer
 {
@@ -35,10 +37,39 @@ namespace wsServer
 
         void serverForm_Shown(object sender, EventArgs e)
         {
+            string content = "http://" + this.deviceIP + ":9901/index.php";
+            this.txtQRcode.Text = content;
+            setQRcode(content);
+
             //检查设备状态
             检查设备状态(Program.getRemoteIPEndPoint());
-        }
 
+
+        }
+        void setQRcode(string content)
+        {
+            int heigth = this.pictureBox1.Height;
+            int width = this.pictureBox1.Width;
+            BarcodeFormat format = BarcodeFormat.QR_CODE;
+
+            ByteMatrix byteMatrix = new MultiFormatWriter().encode(content, format, width, heigth);
+            Bitmap bitmap = toBitmap(byteMatrix);
+            pictureBox1.Image = bitmap;
+        }
+        public Bitmap toBitmap(ByteMatrix matrix)
+        {
+            int width = matrix.Width;
+            int height = matrix.Height;
+            Bitmap bmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    bmap.SetPixel(x, y, matrix.get_Renamed(x, y) != -1 ? ColorTranslator.FromHtml("0xFF000000") : ColorTranslator.FromHtml("0xFFFFFFFF"));
+                }
+            }
+            return bmap;
+        }
         public void add_log(string log)
         {
             Action<string> funcInvoke = data =>
@@ -238,6 +269,18 @@ namespace wsServer
         private void btnGroup_Click(object sender, EventArgs e)
         {
             DeviceCommandManager.executeCommand(enumDeviceCommand.组网, Program.getRemoteIPEndPoint());
+        }
+
+        private void btnResetQrcode_Click(object sender, EventArgs e)
+        {
+            if (txtQRcode.Text == string.Empty)
+            {
+                return;
+            }
+            else
+            {
+                setQRcode(txtQRcode.Text);
+            }
         }
 
 
