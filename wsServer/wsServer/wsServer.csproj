@@ -85,6 +85,7 @@
       <DependentUpon>frmProtocolTest.cs</DependentUpon>
     </Compile>
     <Compile Include="devices\IDeviceCommand.cs" />
+    <Compile Include="LightState.cs" />
     <Compile Include="moduleMannager.cs" />
     <Compile Include="Module\Chat.cs" />
     <Compile Include="Module\Echo.cs" />
@@ -94,7 +95,11 @@
     <Compile Include="Module\TDJ_RFIDHelper.cs" />
     <Compile Include="Module\UDPServer.cs" />
     <Compile Include="Module\UHF.cs" />
-    <Compile Include="Module\light.cs" />
+    <Compile Include="Module\GreenLight.cs" />
+    <Compile Include="Module\RedLight.cs" />
+    <Compile Include="Module\YellowLight.cs" />
+    <Compile Include="Module\Fan.cs" />
+    <Compile Include="Module\Engine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="devices\Protocol.cs" />

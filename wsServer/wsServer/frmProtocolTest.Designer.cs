@@ -89,7 +89,7 @@
             this.btnSaveRed.TabIndex = 3;
             this.btnSaveRed.Text = "保存";
             this.btnSaveRed.UseVisualStyleBackColor = true;
-            this.btnSaveRed.Click += new System.EventHandler(this.btnSaveRed_Click);
+            this.btnSaveRed.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // label2
             // 

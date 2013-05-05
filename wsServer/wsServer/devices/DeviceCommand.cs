@@ -5,16 +5,31 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace wsServer
 {
     public enum enumDeviceCommand
     {
-        检查红灯状态, 检查绿灯状态, 检查黄灯状态, 打开红灯, 打开绿灯//。。。
+        查询红灯状态, 查询绿灯状态, 查询黄灯状态, 打开红灯, 关闭红灯, 打开绿灯, 关闭绿灯, 打开黄灯, 关闭黄灯, 打开电机, 关闭电机, 打开风扇, 关闭风扇,//。。。
+        查询风扇状态,
+        查询电机状态,组网
     }
     public class DeviceCommandManager
     {
+        static string 打开红灯命令 = "A5030000000000";
+        static string 关闭红灯命令 = "A5020000000000";
+        static string 打开绿灯命令 = "A5050000000000";
+        static string 关闭绿灯命令 = "A5040000000000";
+        static string 打开黄灯命令 = "A5070000000000";
+        static string 关闭黄灯命令 = "A5060000000000";
+        static string 打开电机命令 = "A5090000000000";
+        static string 关闭电机命令 = "A5080000000000";
+        static string 打开风扇命令 = "A50B0000000000";
+        static string 关闭风扇命令 = "A50A0000000000";
+        static string 组网 = "4D41544348";
+
         static List<IDeviceCommand> DeviceCommandList = new List<IDeviceCommand>();
 
         public static void setCommandCallback(enumDeviceCommand name, Action<string> _callback)
@@ -25,6 +40,14 @@ namespace wsServer
             {
                 cmd.Callback = _callback;
             }
+        }
+        public static void executeCommand(enumDeviceCommand name, IPEndPoint ipEndPoint, int timeLater)
+        {
+            if (timeLater > 0)
+            {
+                Thread.Sleep(timeLater);
+            }
+            executeCommand(name, ipEndPoint);
         }
         public static void executeCommand(enumDeviceCommand name, IPEndPoint ipEndPoint)
         {
@@ -76,30 +99,50 @@ namespace wsServer
             DeviceCommandList.Add(new cmdCheckLight1());
             DeviceCommandList.Add(new cmdCheckLight2());
             DeviceCommandList.Add(new cmdCheckLight3());
+            DeviceCommandList.Add(new cmdCheckEngine());
+            DeviceCommandList.Add(new cmdCheckFan());
+            DeviceCommandList.Add(new cmdCloseOrOpen(打开红灯命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(关闭红灯命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(打开绿灯命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(关闭绿灯命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(打开黄灯命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(关闭黄灯命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(打开电机命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(关闭电机命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(打开风扇命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(关闭风扇命令));
+            DeviceCommandList.Add(new cmdCloseOrOpen(组网));
 
             //读取数据库，匹配命令和名称
         }
         #region helper func
         public static void getResponseData(IAsyncResult ar)
         {
-            //Socket clientSocket = (Socket)ar.AsyncState;
-            object[] array = (object[])ar.AsyncState;
-            Socket clientSocket = (Socket)array[0];
-            clientSocket.EndSend(ar);
-            byte[] byteData = new byte[1024];
-            clientSocket.Receive(byteData);
-
-            string strReceived = Encoding.UTF8.GetString(byteData);
-
-            Array.Clear(byteData, 0, byteData.Length);
-            int i = strReceived.IndexOf("\0");
-            if (i > 0)
+            try
             {
-                string data = strReceived.Substring(0, i);
-                Debug.WriteLine(" Data => SP: " + data);
-                //todo here should deal with the received string
-                IDeviceCommand cmd = (IDeviceCommand)array[1];
-                cmd.callBack(data);
+                //Socket clientSocket = (Socket)ar.AsyncState;
+                object[] array = (object[])ar.AsyncState;
+                Socket clientSocket = (Socket)array[0];
+                clientSocket.EndSend(ar);
+                byte[] byteData = new byte[1024];
+                clientSocket.Receive(byteData);
+
+                string strReceived = Encoding.UTF8.GetString(byteData);
+
+                Array.Clear(byteData, 0, byteData.Length);
+                int i = strReceived.IndexOf("\0");
+                if (i > 0)
+                {
+                    string data = strReceived.Substring(0, i);
+                    Debug.WriteLine(" Data => SP: " + data);
+                    //todo here should deal with the received string
+                    IDeviceCommand cmd = (IDeviceCommand)array[1];
+                    cmd.callBack(data);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("getResponseData => " + e.Message);
             }
         }
         public static void sendCommand(IDeviceCommand cmd, IPEndPoint ipEndPoint)
@@ -112,16 +155,7 @@ namespace wsServer
         }
         #endregion
     }
-    public class LightState
-    {
-       public bool State;
-       public string Name;
-        public LightState(string _name, bool _state)
-        {
-            this.Name = _name;
-            this.State = _state;
-        }
-    }
+
     public class cmdCheckLight1 : IDeviceCommand
     {
         string cmd = "5A0180";
@@ -280,6 +314,160 @@ namespace wsServer
                     break;
             }
             return r;
+        }
+    }
+    public class cmdCheckEngine : IDeviceCommand
+    {
+        string cmd = "5A0480";
+        Action<string> callback = null;
+        public Action<string> Callback
+        {
+            set { callback = value; }
+            get { return callback; }
+        }
+        public cmdCheckEngine()
+        {
+            //callback = (data) =>
+            //{
+            //    Debug.WriteLine(name + " => " + data);
+            //};
+        }
+        public void callBack(string data)
+        {
+            if (this.callback != null)
+            {
+                this.callback(data);
+            }
+        }
+        public void sendCommand(IPEndPoint ipEndPoint)
+        {
+            DeviceCommandManager.sendCommand(this, ipEndPoint);
+        }
+
+        public string getCmd()
+        {
+            return this.cmd;
+        }
+
+        string name = string.Empty;
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+        public LightState parseResponse(string res)
+        {
+            LightState r = null;
+            switch (res.ToUpper())
+            {
+                case "A008":
+                    r = new LightState(name, false);
+                    break;
+                case "A009":
+                    r = new LightState(name, true);
+                    break;
+            }
+            return r;
+        }
+    }
+    public class cmdCheckFan : IDeviceCommand
+    {
+        string cmd = "5A0580";
+        Action<string> callback = null;
+        public Action<string> Callback
+        {
+            set { callback = value; }
+            get { return callback; }
+        }
+        public cmdCheckFan()
+        {
+            //callback = (data) =>
+            //{
+            //    Debug.WriteLine(name + " => " + data);
+            //};
+        }
+        public void callBack(string data)
+        {
+            if (this.callback != null)
+            {
+                this.callback(data);
+            }
+        }
+        public void sendCommand(IPEndPoint ipEndPoint)
+        {
+            DeviceCommandManager.sendCommand(this, ipEndPoint);
+        }
+
+        public string getCmd()
+        {
+            return this.cmd;
+        }
+
+        string name = string.Empty;
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+        public LightState parseResponse(string res)
+        {
+            LightState r = null;
+            switch (res.ToUpper())
+            {
+                case "A00A":
+                    r = new LightState(name, false);
+                    break;
+                case "A00B":
+                    r = new LightState(name, true);
+                    break;
+            }
+            return r;
+        }
+    }
+    public class cmdCloseOrOpen : IDeviceCommand
+    {
+        string cmd = "5A0580";
+        Action<string> callback = null;
+        public Action<string> Callback
+        {
+            set { callback = value; }
+            get { return callback; }
+        }
+
+        public static cmdCloseOrOpen getCmd(string _cmd)
+        {
+            return new cmdCloseOrOpen(_cmd);
+        }
+        public cmdCloseOrOpen(string cmd)
+        {
+            this.cmd = cmd;
+        }
+        public void callBack(string data)
+        {
+            if (this.callback != null)
+            {
+                this.callback(data);
+            }
+        }
+        public void sendCommand(IPEndPoint ipEndPoint)
+        {
+            DeviceCommandManager.sendCommand(this, ipEndPoint);
+        }
+
+        public string getCmd()
+        {
+            return this.cmd;
+        }
+
+        string name = string.Empty;
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+        public LightState parseResponse(string res)
+        {
+            return null;
         }
     }
     //public class DeviceCommand

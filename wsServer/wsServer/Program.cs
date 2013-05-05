@@ -28,7 +28,12 @@ namespace wsServer
             //frmProtocolTest form = new frmProtocolTest();
             Application.Run(form);
         }
-
+        public static IPEndPoint getRemoteIPEndPoint()
+        {
+            IPAddress ip = IPAddress.Parse(GetLocalIP4());
+            IPEndPoint ipEndPoint = new IPEndPoint(ip, 19200);
+            return ipEndPoint;
+        }
         public static string GetLocalIP4()
         {
             IPAddress ipAddress = null;

@@ -27,9 +27,15 @@ namespace wsServer
             {
                 pList = new List<CommandMatch>();
             }
-            CommandMatchHelper.addCommand(pList, new CommandMatch(enumDeviceCommand.检查红灯状态.ToString(), ""));
-            CommandMatchHelper.addCommand(pList, new CommandMatch(enumDeviceCommand.检查绿灯状态.ToString(), ""));
-            CommandMatchHelper.addCommand(pList, new CommandMatch(enumDeviceCommand.检查黄灯状态.ToString(), ""));
+
+            Array array = Enum.GetValues(typeof(enumDeviceCommand));
+            for (int i = 0; i < array.Length; i++)
+            {
+                CommandMatchHelper.addCommand(pList, new CommandMatch(array.GetValue(i).ToString(), ""));
+            }
+            //CommandMatchHelper.addCommand(pList, new CommandMatch(enumDeviceCommand.检查红灯状态.ToString(), ""));
+            //CommandMatchHelper.addCommand(pList, new CommandMatch(enumDeviceCommand.检查绿灯状态.ToString(), ""));
+            //CommandMatchHelper.addCommand(pList, new CommandMatch(enumDeviceCommand.检查黄灯状态.ToString(), ""));
             // 。。。
 
             foreach (CommandMatch c in pList)
@@ -75,13 +81,19 @@ namespace wsServer
             }
         }
 
-        private void btnSaveRed_Click(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
             string name = (string)this.cbCmd.SelectedItem;
             if (name != null)
             {
-                CommandMatchHelper.updateCommand(pList, new CommandMatch(name, this.txtCmd.Text));
-                this.changed = true;
+                if (CommandMatchHelper.updateCommand(pList, new CommandMatch(name, this.txtCmd.Text)))
+                {
+                    this.changed = true;
+                }
+                else
+                {
+                    MessageBox.Show("保存失败，可能已经存在该命令！");
+                }
             }
         }
 
@@ -134,7 +146,7 @@ namespace wsServer
 
             clientSocket.BeginSendTo(_byteData, 0, _byteData.Length, SocketFlags.None,
                             ipEndPoint, getResponseData, clientSocket);
-        } 
+        }
         #endregion
 
     }

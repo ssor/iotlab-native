@@ -14,16 +14,25 @@ namespace wsServer
 
         public static bool updateCommand(List<CommandMatch> list, CommandMatch cmd)
         {
-            CommandMatch temp = list.Find((_cmd) =>
+            //首先要保证协议内同一个命令不能两次出现
+            bool b = list.Exists((_cmd) =>
+                {
+                    return cmd.cmd == _cmd.cmd;
+                });
+            if (!b)
             {
-                return cmd.name == _cmd.name;
-            });
-            if (temp != null)
-            {
-                temp.cmd = cmd.cmd;
-                DeviceCommandManager.matchCommand(cmd);
-                return true;
+                CommandMatch temp = list.Find((_cmd) =>
+                {
+                    return cmd.name == _cmd.name;
+                });
+                if (temp != null)
+                {
+                    temp.cmd = cmd.cmd;
+                    DeviceCommandManager.matchCommand(cmd);
+                    return true;
+                }
             }
+
             return false;
         }
         //往列表里加入一个命令，如果有名字相同的则不再添加
