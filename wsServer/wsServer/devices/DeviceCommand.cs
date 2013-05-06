@@ -14,7 +14,7 @@ namespace wsServer
     {
         查询红灯状态, 查询绿灯状态, 查询黄灯状态, 打开红灯, 关闭红灯, 打开绿灯, 关闭绿灯, 打开黄灯, 关闭黄灯, 打开电机, 关闭电机, 打开风扇, 关闭风扇,//。。。
         查询风扇状态,
-        查询电机状态,组网
+        查询电机状态, 组网
     }
     public class DeviceCommandManager
     {
@@ -57,6 +57,14 @@ namespace wsServer
             {
                 cmd.sendCommand(ipEndPoint);
             }
+        }
+        public static IDeviceCommand getDeivceCommandWithResponseOf(string res)
+        {
+            IDeviceCommand idc = DeviceCommandList.Find((cmd) =>
+            {
+                return cmd.itsMyResponsibility(res);
+            });
+            return idc;
         }
         public static IDeviceCommand getDeivceCommand(enumDeviceCommand name)
         {
@@ -148,10 +156,14 @@ namespace wsServer
         public static void sendCommand(IDeviceCommand cmd, IPEndPoint ipEndPoint)
         {
             Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            byte[] _byteData = Encoding.UTF8.GetBytes(cmd.getCmd());
+            string strcmd = cmd.getCmd();
+            Debug.WriteLine("=> " + strcmd);
+            byte[] _byteData = Encoding.UTF8.GetBytes(strcmd);
 
             clientSocket.BeginSendTo(_byteData, 0, _byteData.Length, SocketFlags.None,
-                            ipEndPoint, getResponseData, new object[] { clientSocket, cmd });
+                            ipEndPoint, null, null);
+            //clientSocket.BeginSendTo(_byteData, 0, _byteData.Length, SocketFlags.None,
+            //    ipEndPoint, getResponseData, new object[] { clientSocket, cmd });
         }
         #endregion
     }
@@ -208,6 +220,14 @@ namespace wsServer
             }
             return r;
         }
+        public bool itsMyResponsibility(string res)
+        {
+            if (res == "A002" || res == "A003")
+            {
+                return true;
+            }
+            return false;
+        }
     }
     public class cmdCheckLight2 : IDeviceCommand
     {
@@ -260,6 +280,14 @@ namespace wsServer
                     break;
             }
             return r;
+        }
+        public bool itsMyResponsibility(string res)
+        {
+            if (res == "A004" || res == "A005")
+            {
+                return true;
+            }
+            return false;
         }
     }
     public class cmdCheckLight3 : IDeviceCommand
@@ -315,6 +343,14 @@ namespace wsServer
             }
             return r;
         }
+        public bool itsMyResponsibility(string res)
+        {
+            if (res == "A006" || res == "A007")
+            {
+                return true;
+            }
+            return false;
+        }
     }
     public class cmdCheckEngine : IDeviceCommand
     {
@@ -369,6 +405,18 @@ namespace wsServer
             }
             return r;
         }
+
+
+
+        public bool itsMyResponsibility(string res)
+        {
+            if (res == "A008" || res == "A009")
+            {
+                return true;
+            }
+            return false;
+        }
+
     }
     public class cmdCheckFan : IDeviceCommand
     {
@@ -423,6 +471,14 @@ namespace wsServer
             }
             return r;
         }
+        public bool itsMyResponsibility(string res)
+        {
+            if (res == "A00A" || res == "A00B")
+            {
+                return true;
+            }
+            return false;
+        }
     }
     public class cmdCloseOrOpen : IDeviceCommand
     {
@@ -468,6 +524,10 @@ namespace wsServer
         public LightState parseResponse(string res)
         {
             return null;
+        }
+        public bool itsMyResponsibility(string res)
+        {
+            return false;
         }
     }
     //public class DeviceCommand

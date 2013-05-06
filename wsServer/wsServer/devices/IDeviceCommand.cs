@@ -16,5 +16,6 @@ namespace wsServer
         void sendCommand(IPEndPoint ipEndPoint);
         void callBack(string data);
         LightState parseResponse(string res);
+        bool itsMyResponsibility(string res);
     }
 }

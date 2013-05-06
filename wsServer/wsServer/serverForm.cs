@@ -14,6 +14,7 @@ using System.Diagnostics;
 using ModuleCommand;
 using com.google.zxing.common;
 using com.google.zxing;
+using System.Threading;
 
 namespace wsServer
 {
@@ -42,7 +43,7 @@ namespace wsServer
             setQRcode(content);
 
             //检查设备状态
-            检查设备状态(Program.getRemoteIPEndPoint());
+            //检查设备状态(Program.getRemoteIPEndPoint());
 
 
         }
@@ -76,13 +77,13 @@ namespace wsServer
             {
                 this.txtLog.Text = data + "\r\n" + this.txtLog.Text;
             };
-
-            if (this.txtLog.InvokeRequired)
-            {
-                this.txtLog.Invoke(funcInvoke, log);
-            }
-            else
-                funcInvoke(log);
+            this.Invoke(funcInvoke, log);
+            //if (this.txtLog.InvokeRequired)
+            //{
+            //    this.txtLog.Invoke(funcInvoke, log);
+            //}
+            //else
+            //    funcInvoke(log);
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -96,6 +97,9 @@ namespace wsServer
             wssv.AddWebSocketService<FanService>("/fan");
             wssv.AddWebSocketService<EngineService>("/engine");
             wssv.Start();
+            this.initial_udp_server(Program.inputPort);
+            检查设备状态(Program.getRemoteIPEndPoint(), 3000);
+
             this.button2.Enabled = true;
             this.button1.Enabled = false;
         }
@@ -112,154 +116,8 @@ namespace wsServer
             IPAddress ip = IPAddress.Parse(this.deviceIP);
             IPEndPoint ipEndPoint = new IPEndPoint(ip, 19200);
 
-            检查设备状态(ipEndPoint);
+            检查设备状态(ipEndPoint, 3000);
         }
-        #region 设备检测
-        void 检查设备状态(IPEndPoint ipEndPoint)
-        {
-            检查绿灯状态(ipEndPoint);
-            检查黄灯状态(ipEndPoint);
-            检查红灯状态(ipEndPoint);
-            查询电机状态(ipEndPoint);
-            查询风扇状态(ipEndPoint);
-        }
-        void 检查红灯状态(IPEndPoint ipEndPoint)
-        {
-            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询红灯状态,
-               (data) =>
-               {
-                   Debug.WriteLine("红灯状态 => " + data);
-                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询红灯状态);
-                   if (null != idc)
-                   {
-                       LightState ls = idc.parseResponse(data);
-                       if (null != ls)
-                       {
-                           if (ls.State)
-                           {
-                               this.add_log("红灯已经打开");
-                               RedLightService.last_effective_command = new command("open", "");
-                           }
-                           else
-                           {
-                               this.add_log("红灯已经关闭");
-                               RedLightService.last_effective_command = new command("close", "");
-                           }
-                       }
-                   }
-               });
-            DeviceCommandManager.executeCommand(enumDeviceCommand.查询红灯状态, ipEndPoint);
-        }
-        void 检查黄灯状态(IPEndPoint ipEndPoint)
-        {
-            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询黄灯状态,
-               (data) =>
-               {
-                   Debug.WriteLine("黄灯状态 => " + data);
-                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询黄灯状态);
-                   if (null != idc)
-                   {
-                       LightState ls = idc.parseResponse(data);
-                       if (null != ls)
-                       {
-                           if (ls.State)
-                           {
-                               this.add_log("黄灯已经打开");
-                               YellowLightService.last_effective_command = new command("open", "");
-                           }
-                           else
-                           {
-                               this.add_log("黄灯已经关闭");
-                               YellowLightService.last_effective_command = new command("close", "");
-                           }
-                       }
-                   }
-               });
-            DeviceCommandManager.executeCommand(enumDeviceCommand.查询黄灯状态, ipEndPoint);
-        }
-        void 检查绿灯状态(IPEndPoint ipEndPoint)
-        {
-            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询绿灯状态,
-               (data) =>
-               {
-                   Debug.WriteLine("绿灯状态 => " + data);
-                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询绿灯状态);
-                   if (null != idc)
-                   {
-                       LightState ls = idc.parseResponse(data);
-                       if (null != ls)
-                       {
-                           if (ls.State)
-                           {
-                               this.add_log("绿灯已经打开");
-                               GreenLightService.last_effective_command = new command("open", "");
-                           }
-                           else
-                           {
-                               this.add_log("绿灯已经关闭");
-                               GreenLightService.last_effective_command = new command("close", "");
-                           }
-                       }
-                   }
-               });
-            DeviceCommandManager.executeCommand(enumDeviceCommand.查询绿灯状态, ipEndPoint);
-        }
-        void 查询电机状态(IPEndPoint ipEndPoint)
-        {
-            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询电机状态,
-               (data) =>
-               {
-                   Debug.WriteLine("电机状态 => " + data);
-                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询电机状态);
-                   if (null != idc)
-                   {
-                       LightState ls = idc.parseResponse(data);
-                       if (null != ls)
-                       {
-                           if (ls.State)
-                           {
-                               this.add_log("电机已经打开");
-                               EngineService.last_effective_command = new command("open", "");
-                           }
-                           else
-                           {
-                               this.add_log("电机已经关闭");
-                               EngineService.last_effective_command = new command("close", "");
-                           }
-                       }
-                   }
-               });
-            DeviceCommandManager.executeCommand(enumDeviceCommand.查询电机状态, ipEndPoint);
-        }
-        void 查询风扇状态(IPEndPoint ipEndPoint)
-        {
-            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询风扇状态,
-               (data) =>
-               {
-                   Debug.WriteLine("风扇状态 => " + data);
-                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询风扇状态);
-                   if (null != idc)
-                   {
-                       LightState ls = idc.parseResponse(data);
-                       if (null != ls)
-                       {
-                           if (ls.State)
-                           {
-                               this.add_log("风扇已经打开");
-                               FanService.last_effective_command = new command("open", "");
-                           }
-                           else
-                           {
-                               this.add_log("风扇已经关闭");
-                               FanService.last_effective_command = new command("close", "");
-                           }
-                       }
-                   }
-               });
-            DeviceCommandManager.executeCommand(enumDeviceCommand.查询风扇状态, ipEndPoint);
-        }
-
-        #endregion
         private void btnTestCmd_Click(object sender, EventArgs e)
         {
             frmProtocolTest form = new frmProtocolTest();
@@ -283,7 +141,273 @@ namespace wsServer
             }
         }
 
+        #region 设备检测
+        void 检查设备状态(IPEndPoint ipEndPoint, int timeLater)
+        {
+            检查绿灯状态(ipEndPoint);
 
+            Thread.Sleep(timeLater);
+            检查黄灯状态(ipEndPoint);
+
+            Thread.Sleep(timeLater);
+            检查红灯状态(ipEndPoint);
+
+            Thread.Sleep(timeLater);
+            查询电机状态(ipEndPoint);
+
+            Thread.Sleep(timeLater);
+            查询风扇状态(ipEndPoint);
+        }
+        void 检查红灯状态(IPEndPoint ipEndPoint)
+        {
+            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询红灯状态,
+               (data) =>
+               {
+                   Debug.WriteLine("红灯状态 => " + data);
+                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询红灯状态);
+                   if (null != idc)
+                   {
+                       LightState ls = idc.parseResponse(data);
+                       if (null != ls)
+                       {
+                           if (ls.State)
+                           {
+                               string log = "红灯已经打开";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+                               RedLightService.last_effective_command = new command("open", "");
+                           }
+                           else
+                           {
+                               string log = "红灯已经关闭";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+
+                               RedLightService.last_effective_command = new command("close", "");
+                           }
+                       }
+                   }
+               });
+            DeviceCommandManager.executeCommand(enumDeviceCommand.查询红灯状态, ipEndPoint);
+        }
+        void 检查黄灯状态(IPEndPoint ipEndPoint)
+        {
+            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询黄灯状态,
+               (data) =>
+               {
+                   Debug.WriteLine("黄灯状态 => " + data);
+                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询黄灯状态);
+                   if (null != idc)
+                   {
+                       LightState ls = idc.parseResponse(data);
+                       if (null != ls)
+                       {
+                           if (ls.State)
+                           {
+                               string log = "黄灯已经打开";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+                               YellowLightService.last_effective_command = new command("open", "");
+                           }
+                           else
+                           {
+
+                               string log = "黄灯已经关闭";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+                               YellowLightService.last_effective_command = new command("close", "");
+                           }
+                       }
+                   }
+               });
+            DeviceCommandManager.executeCommand(enumDeviceCommand.查询黄灯状态, ipEndPoint);
+        }
+        void 检查绿灯状态(IPEndPoint ipEndPoint)
+        {
+            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询绿灯状态,
+               (data) =>
+               {
+                   Debug.WriteLine("绿灯状态 => " + data);
+                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询绿灯状态);
+                   if (null != idc)
+                   {
+                       LightState ls = idc.parseResponse(data);
+                       if (null != ls)
+                       {
+                           if (ls.State)
+                           {
+                               string log = "绿灯已经打开";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+                               GreenLightService.last_effective_command = new command("open", "");
+                           }
+                           else
+                           {
+                               string log = "绿灯已经关闭";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+                               GreenLightService.last_effective_command = new command("close", "");
+                           }
+                       }
+                   }
+               });
+            DeviceCommandManager.executeCommand(enumDeviceCommand.查询绿灯状态, ipEndPoint);
+        }
+        void 查询电机状态(IPEndPoint ipEndPoint)
+        {
+            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询电机状态,
+               (data) =>
+               {
+                   Debug.WriteLine("电机状态 => " + data);
+                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询电机状态);
+                   if (null != idc)
+                   {
+                       LightState ls = idc.parseResponse(data);
+                       if (null != ls)
+                       {
+                           if (ls.State)
+                           {
+                               string log = "电机已经打开";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+                               EngineService.last_effective_command = new command("open", "");
+                           }
+                           else
+                           {
+                               string log = "电机已经关闭";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+                               EngineService.last_effective_command = new command("close", "");
+                           }
+                       }
+                   }
+               });
+            DeviceCommandManager.executeCommand(enumDeviceCommand.查询电机状态, ipEndPoint);
+        }
+        void 查询风扇状态(IPEndPoint ipEndPoint)
+        {
+            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询风扇状态,
+               (data) =>
+               {
+                   Debug.WriteLine("风扇状态 => " + data);
+                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询风扇状态);
+                   if (null != idc)
+                   {
+                       LightState ls = idc.parseResponse(data);
+                       if (null != ls)
+                       {
+                           if (ls.State)
+                           {
+                               string log = "风扇已经打开";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+                               FanService.last_effective_command = new command("open", "");
+                           }
+                           else
+                           {
+                               string log = "风扇已经关闭";
+                               this.add_log(log);
+                               Debug.WriteLine(log);
+                               FanService.last_effective_command = new command("close", "");
+                           }
+                       }
+                   }
+               });
+            DeviceCommandManager.executeCommand(enumDeviceCommand.查询风扇状态, ipEndPoint);
+        }
+
+        #endregion
+
+
+        #region UDP 监听
+        Socket serverSocket = null; //The main server socket
+        byte[] byteData = new byte[1024];
+
+        void initial_udp_server(int port)
+        {
+            try
+            {
+                serverSocket = new Socket(AddressFamily.InterNetwork,
+                            SocketType.Dgram, ProtocolType.Udp);
+                IPAddress ip = IPAddress.Parse(Program.GetLocalIP4());
+                IPEndPoint ipEndPoint = new IPEndPoint(ip, port);
+                //Bind this address to the server
+                serverSocket.Bind(ipEndPoint);
+                //防止客户端强行中断造成的异常
+                long IOC_IN = 0x80000000;
+                long IOC_VENDOR = 0x18000000;
+                long SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
+
+                byte[] optionInValue = { Convert.ToByte(false) };
+                byte[] optionOutValue = new byte[4];
+                serverSocket.IOControl((int)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
+
+                IPEndPoint ipeSender = new IPEndPoint(IPAddress.Any, 0);
+                //The epSender identifies the incoming clients
+                EndPoint epSender = (EndPoint)ipeSender;
+
+                //Start receiving data
+                serverSocket.BeginReceiveFrom(byteData, 0, byteData.Length,
+                    SocketFlags.None, ref epSender, new AsyncCallback(OnReceive), epSender);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+        private void OnReceive(IAsyncResult ar)
+        {
+
+            try
+            {
+                IPEndPoint ipeSender = new IPEndPoint(IPAddress.Any, 0);
+                EndPoint epSender = (EndPoint)ipeSender;
+
+                serverSocket.EndReceiveFrom(ar, ref epSender);
+                StringBuilder builder = new StringBuilder();
+                if (true)//16进制
+                {
+                    //依次的拼接出16进制字符串
+                    foreach (byte b in byteData)
+                    {
+                        if (b > 0)
+                        {
+                            builder.Append(b.ToString("X2"));
+                        }
+                    }
+
+                }
+                else
+                {
+                    //直接按ASCII规则转换成字符串
+                    builder.Append(Encoding.ASCII.GetString(byteData));
+                }
+
+                Array.Clear(byteData, 0, byteData.Length);
+                string strReceived = builder.ToString();
+                //int i = strReceived.IndexOf("\0");
+                if (strReceived.Length > 0)
+                {
+                    IDeviceCommand cmd = DeviceCommandManager.getDeivceCommandWithResponseOf(strReceived);
+                    if (cmd != null)
+                    {
+                        cmd.callBack(strReceived);
+                    }
+                }
+
+                //Start listening to the message send by the user
+                serverSocket.BeginReceiveFrom(byteData, 0, byteData.Length, SocketFlags.None, ref epSender,
+                    new AsyncCallback(OnReceive), epSender);
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(
+                    string.Format("UDPServer.OnReceive  -> error = {0}"
+                    , ex.Message));
+            }
+        }
+        #endregion
 
     }
 }
