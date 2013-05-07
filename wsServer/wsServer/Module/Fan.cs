@@ -83,7 +83,7 @@ namespace ModuleService
             DeviceCommandManager.setCommandCallback(enumDeviceCommand.≤È—Ø∑Á…»◊¥Ã¨,
                (data) =>
                {
-                   Debug.WriteLine("ª∆µ∆◊¥Ã¨ => " + data);
+                   Debug.WriteLine("∑Á…»◊¥Ã¨ => " + data);
                    IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.≤È—Ø∑Á…»◊¥Ã¨);
                    if (null != idc)
                    {

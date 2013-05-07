@@ -12,6 +12,8 @@ namespace wsServer
 {
     class Program
     {
+        public static int inputPort = 19201;
+        public static int outputPort = 19200;
         [STAThread]
         static void Main()
         {
@@ -31,7 +33,7 @@ namespace wsServer
         public static IPEndPoint getRemoteIPEndPoint()
         {
             IPAddress ip = IPAddress.Parse(GetLocalIP4());
-            IPEndPoint ipEndPoint = new IPEndPoint(ip, 19200);
+            IPEndPoint ipEndPoint = new IPEndPoint(ip, outputPort);
             return ipEndPoint;
         }
         public static string GetLocalIP4()
