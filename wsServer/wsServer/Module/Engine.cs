@@ -1,6 +1,4 @@
 using System;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -10,6 +8,7 @@ using nsUHF;
 using System.Collections.Generic;
 using System.Net;
 using wsServer;
+using Fleck;
 
 
 namespace ModuleService
@@ -19,11 +18,15 @@ namespace ModuleService
         public static string recently_broadcast = string.Empty;
         command last_command = null;
         public static command last_effective_command = null;
-        public EngineService()
+        public EngineService(WebSocketServiceManager _manager, IWebSocketConnection socket)
         {
             services.register_service("engine", this);
+            this.ID = socket.ConnectionInfo.Id.ToString();
+            this._manager = _manager;
+            this._websocket = socket;
+            this._context = socket.ConnectionInfo;
         }
-        protected override void OnOpen()
+        public override void OnOpen()
         {
             if (last_effective_command != null)
             {
@@ -36,9 +39,8 @@ namespace ModuleService
 
             //}
         }
-        protected override void OnMessage(MessageEventArgs e)
+        public override void OnMessage(string msg)
         {
-            var msg = e.Data;
             Debug.WriteLine(string.Format("EngineService OnMessage => {0}", msg));
             try
             {
@@ -63,9 +65,9 @@ namespace ModuleService
                 Debug.WriteLine("parse error!");
             }
         }
-        protected override void OnClose(CloseEventArgs e)
+        public override void OnClose()
         {
-            base.OnClose(e);
+            //base.OnClose();
         }
 
         void ¹Ø±Õµç»ú(IPEndPoint ipEndPoint)

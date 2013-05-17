@@ -1,15 +1,13 @@
+using Fleck;
 using System;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 
 namespace wsServer
 {
 
     public class Echo : WebSocketService
     {
-        protected override void OnMessage(MessageEventArgs e)
+        public override void OnMessage(string msg)
         {
-            var msg = e.Data;
             Console.WriteLine(string.Format("OnMessage => {0}", msg));
             Send("echo -> " + msg);
 

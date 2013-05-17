@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WebSocketSharp.Server;
 using ModuleService;
 using System.Windows.Forms;
 using System.Net;
@@ -14,6 +13,9 @@ namespace wsServer
     {
         public static int inputPort = 19201;
         public static int outputPort = 19200;
+        public static int UHF_UDP_Port = 3001;
+        public static int GPS_UDP_Port = 3002;
+
         [STAThread]
         static void Main()
         {
@@ -58,5 +60,6 @@ namespace wsServer
             }
             return ipAddress.ToString();
         }
+
     }
 }

@@ -1,6 +1,4 @@
 using System;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -8,6 +6,8 @@ using ModuleCommand;
 using Server;
 using nsUHF;
 using System.Collections.Generic;
+using Fleck;
+using wsServer;
 
 
 namespace ModuleService
@@ -17,14 +17,18 @@ namespace ModuleService
     {
         UDPServer updServer;
         TDJ_RFIDHelper rfid_helper;
-        public UHFService()
+        public UHFService(WebSocketServiceManager _manager, IWebSocketConnection socket)
         {
             services.register_service("uhf", this);
+            this.ID = socket.ConnectionInfo.Id.ToString();
+            this._manager = _manager;
+            this._websocket = socket;
+            this._context = socket.ConnectionInfo;
 
             rfid_helper = new TDJ_RFIDHelper();
 
             //打开UDP端口，等待数据传入
-            this.updServer = UDPServer.getUDPServer(3001);
+            this.updServer = UDPServer.getUDPServer(Program.UHF_UDP_Port);
             updServer.evtReceived += new OnReceiveString(updServer_evtReceived);
             updServer.startUDPListening();
         }
@@ -38,9 +42,8 @@ namespace ModuleService
                 this.Send(list[0].epc);
             }
         }
-        protected override void OnMessage(MessageEventArgs e)
+        public override void OnMessage(string msg)
         {
-            var msg = e.Data;
             Debug.WriteLine(string.Format("UHF OnMessage => {0}", msg));
             try
             {
@@ -62,10 +65,10 @@ namespace ModuleService
                 Debug.WriteLine("parse error!");
             }
         }
-        protected override void OnClose(CloseEventArgs e)
+        public override void OnClose()
         {
             this.updServer.evtReceived -= updServer_evtReceived;
-            base.OnClose(e);
+            //base.OnClose(e);
         }
     }
 }
