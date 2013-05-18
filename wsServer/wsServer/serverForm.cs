@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using WebSocketSharp.Server;
 using ModuleService;
 using System.Net.Sockets;
 using System.Net;
@@ -15,13 +14,17 @@ using ModuleCommand;
 using com.google.zxing.common;
 using com.google.zxing;
 using System.Threading;
+using Fleck;
 
 namespace wsServer
 {
     public partial class serverForm : Form
     {
         string deviceIP = string.Empty;
-        WebSocketServer wssv = null;
+        //WebSocketServer wssv = null;
+        string url = "ws://localhost:4649";
+        WebSocketServer server =null; 
+        ServiceHost host = new ServiceHost();
         public serverForm()
         {
             InitializeComponent();
@@ -87,19 +90,34 @@ namespace wsServer
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            wssv = new WebSocketServer(4649);
-            wssv.AddWebSocketService<Echo>("/Echo");
-            wssv.AddWebSocketService<GPSService>("/gps");
-            wssv.AddWebSocketService<UHFService>("/uhf");
-            wssv.AddWebSocketService<GreenLightService>("/green_light");
-            wssv.AddWebSocketService<RedLightService>("/red_light");
-            wssv.AddWebSocketService<YellowLightService>("/yellow_light");
-            wssv.AddWebSocketService<FanService>("/fan");
-            wssv.AddWebSocketService<EngineService>("/engine");
-            wssv.Start();
-
-            //this.initial_udp_server(Program.inputPort);
-            //检查设备状态(Program.getRemoteIPEndPoint(), 3000);
+            //wssv = new WebSocketServer(4649);
+            //wssv.AddWebSocketService<Echo>("/Echo");
+            //wssv.AddWebSocketService<GPSService>("/gps");
+            //wssv.AddWebSocketService<UHFService>("/uhf");
+            //wssv.AddWebSocketService<GreenLightService>("/green_light");
+            //wssv.AddWebSocketService<RedLightService>("/red_light");
+            //wssv.AddWebSocketService<YellowLightService>("/yellow_light");
+            //wssv.AddWebSocketService<FanService>("/fan");
+            //wssv.AddWebSocketService<EngineService>("/engine");
+            //wssv.Start();
+            server = new WebSocketServer(url);
+            server.Start(socket =>
+            {
+                socket.OnOpen = () =>
+                {
+                    host.OnOpenWebSocket(socket);
+                };
+                socket.OnClose = () =>
+                {
+                    host.OnCloseWebSocket(socket);
+                };
+                socket.OnMessage = message =>
+                {
+                    host.OnMessage(message, socket);
+                };
+            });
+            this.initial_udp_server(Program.inputPort);
+            检查设备状态(Program.getRemoteIPEndPoint(), 3000);
 
             this.button2.Enabled = true;
             this.button1.Enabled = false;
@@ -107,7 +125,14 @@ namespace wsServer
 
         private void button2_Click(object sender, EventArgs e)
         {
-            wssv.Stop();
+            //wssv.Stop();
+            server.Dispose();
+            server = null;
+            if (serverSocket != null)
+            {
+                serverSocket.Close();
+                serverSocket = null;
+            }
             this.button2.Enabled = false;
             this.button1.Enabled = true;
         }
@@ -117,7 +142,7 @@ namespace wsServer
             IPAddress ip = IPAddress.Parse(this.deviceIP);
             IPEndPoint ipEndPoint = new IPEndPoint(ip, 19200);
 
-            检查设备状态(ipEndPoint, 3000);
+            检查设备状态(ipEndPoint, 2000);
         }
         private void btnTestCmd_Click(object sender, EventArgs e)
         {

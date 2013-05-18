@@ -1,7 +1,6 @@
+using Fleck;
 using System;
 using System.Threading;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 
 namespace wsServer
 {
@@ -14,9 +13,10 @@ namespace wsServer
 
         private string getName()
         {
-            return QueryString.Exists("name")
-                   ? QueryString["name"]
-                   : "anon#" + getNum();
+            //return QueryString.Exists("name")
+            //       ? QueryString["name"]
+            //       : "anon#" + getNum();
+            return null;
         }
 
         private int getNum()
@@ -24,19 +24,19 @@ namespace wsServer
             return Interlocked.Increment(ref _num);
         }
 
-        protected override void OnOpen()
+        public override void OnOpen()
         {
             _name = getName();
         }
 
-        protected override void OnMessage(MessageEventArgs e)
+        public override void OnMessage(string message)
         {
 
-            var msg = String.Format("{0}: {1}", _name, e.Data);
+            var msg = String.Format("{0}: {1}", _name, message);
             Broadcast(msg);
         }
 
-        protected override void OnClose(CloseEventArgs e)
+        public override void OnClose()
         {
             var msg = String.Format("{0} got logged off...", _name);
             Broadcast(msg);

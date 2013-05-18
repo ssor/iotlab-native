@@ -1,6 +1,4 @@
 using System;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 using System.Diagnostics;
 
 namespace ModuleCommand

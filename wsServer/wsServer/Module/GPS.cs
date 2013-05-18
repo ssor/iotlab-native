@@ -1,6 +1,4 @@
 using System;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -8,6 +6,8 @@ using ModuleCommand;
 using System.Threading;
 using Server;
 using System.Text;
+using Fleck;
+using wsServer;
 
 
 namespace ModuleService
@@ -30,14 +30,18 @@ namespace ModuleService
         NMEA2OSG OSGconv = new NMEA2OSG();
         StringBuilder sbuilder = new StringBuilder();
 
-        public GPSService()
+        public GPSService(WebSocketServiceManager _manager, IWebSocketConnection socket)
         {
             //services.register_service("gps", this);
+            this.ID = socket.ConnectionInfo.Id.ToString();
+            this._manager = _manager;
+            this._websocket = socket;
+            this._context = socket.ConnectionInfo;
         }
-        protected override void OnOpen()
+        public override void OnOpen()
         {
             //打开UDP端口，等待数据传入
-            this.updServer = UDPServer.getUDPServer(3002);
+            this.updServer = UDPServer.getUDPServer(Program.GPS_UDP_Port);
             updServer.evtReceived += new OnReceiveString(updServer_evtReceived);
             updServer.startUDPListening();
 
@@ -84,9 +88,8 @@ namespace ModuleService
                 }
             }
         }
-        protected override void OnMessage(MessageEventArgs e)
+        public override void OnMessage(string msg)
         {
-            var msg = e.Data;
             Debug.WriteLine(string.Format("GPS OnMessage => {0}", msg));
             try
             {
@@ -112,10 +115,10 @@ namespace ModuleService
                 Debug.WriteLine("parse error!");
             }
         }
-        protected override void OnClose(CloseEventArgs e)
+        public override void OnClose()
         {
             this.updServer.evtReceived -= updServer_evtReceived;
-            base.OnClose(e);
+            //base.OnClose(e);
         }
     }
 }

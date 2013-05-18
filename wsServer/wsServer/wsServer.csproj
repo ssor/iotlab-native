@@ -81,6 +81,9 @@
   <ItemGroup>
     <Compile Include="command.cs" />
     <Compile Include="devices\DeviceCommand.cs" />
+    <Compile Include="fleck\ServiceHost.cs" />
+    <Compile Include="fleck\WebSocketService.cs" />
+    <Compile Include="fleck\WebSocketServiceManager.cs" />
     <Compile Include="frmProtocolTest.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -123,9 +126,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\websocket-sharp\websocket-sharp.csproj">
-      <Project>{B357BAC7-529E-4D81-A0D2-71041B19C8DE}</Project>
-      <Name>websocket-sharp</Name>
+    <ProjectReference Include="..\Fleck\Fleck.csproj">
+      <Project>{8b12d929-afa9-4307-beff-2ed0f1070fee}</Project>
+      <Name>Fleck</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
