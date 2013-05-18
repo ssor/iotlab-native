@@ -97,8 +97,9 @@ namespace wsServer
             wssv.AddWebSocketService<FanService>("/fan");
             wssv.AddWebSocketService<EngineService>("/engine");
             wssv.Start();
-            this.initial_udp_server(Program.inputPort);
-            检查设备状态(Program.getRemoteIPEndPoint(), 3000);
+
+            //this.initial_udp_server(Program.inputPort);
+            //检查设备状态(Program.getRemoteIPEndPoint(), 3000);
 
             this.button2.Enabled = true;
             this.button1.Enabled = false;
