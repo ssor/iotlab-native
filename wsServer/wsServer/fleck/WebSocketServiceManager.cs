@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ModuleCommand;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,6 +8,12 @@ using System.Text;
 
 namespace Fleck
 {
+    public interface IServicePlus
+    {
+        void OnMessage(command _cmd);
+        void Send(command _cmd);
+        void Open();
+    }
     //管理该路径下的所有链接
     public class WebSocketServiceManager
     {
@@ -28,7 +36,7 @@ namespace Fleck
             {
                 this.memberList.Add(_service);
                 _service.OnOpen();
-                Debug.WriteLine(" ++ count => " + memberList.Count.ToString());
+                Debug.WriteLine("***** MClient ++ count => " + memberList.Count.ToString());
                 return true;
             }
             return false;
@@ -36,6 +44,29 @@ namespace Fleck
         public void Broadcast(string data)
         {
             memberList.ForEach(s => { s.Send(data); });
+        }
+        public void Send(string data, string _id)
+        {
+            WebSocketService service = memberList.Find((_temp) =>
+            {
+                return _id == _temp.ID;
+            });
+            if (null != service)
+            {
+                //service.Send(data);
+                ((IServicePlus)service).Send((command)JsonConvert.DeserializeObject(data, typeof(command)));
+            }
+        }
+        public void Open(IWebSocketConnection _socket)
+        {
+            WebSocketService service = memberList.Find((_temp) =>
+            {
+                return _temp.ID == _socket.ConnectionInfo.Id.ToString();
+            });
+            if (service != null)
+            {
+                ((IServicePlus)service).Open();
+            }
         }
         public void removeMember(string _id)
         {
@@ -47,7 +78,7 @@ namespace Fleck
             {
                 service.OnClose();
                 this.memberList.Remove(service);
-                Debug.WriteLine(" -- count => " + memberList.Count.ToString());
+                Debug.WriteLine("***** MClient -- count => " + memberList.Count.ToString());
             }
         }
         public void OnMessage(string message, IWebSocketConnection _socket)
@@ -58,7 +89,10 @@ namespace Fleck
             });
             if (service != null)
             {
-                service.OnMessage(message);
+                command cmd_temp = (command)JsonConvert.DeserializeObject(message, typeof(command));
+                cmd_temp.id = _socket.ConnectionInfo.Id.ToString();
+                //service.OnMessage(JsonConvert.SerializeObject(cmd_temp));
+                ((IServicePlus)service).OnMessage(cmd_temp);
             }
             //_socket.Send("private =>" + message);
             //Broadcast("public => " + message);

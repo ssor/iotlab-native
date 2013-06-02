@@ -1,4 +1,6 @@
-﻿using ModuleService;
+﻿using ModuleCommand;
+using ModuleService;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,19 +24,19 @@ namespace Fleck
                 case "/uhf":
                     service = new UHFService(_manager, socket);
                     break;
-                case "/green_light":
+                case "/" + TargetDeiveName.绿灯:
                     service = new GreenLightService(_manager, socket);
                     break;
-                case "/red_light":
+                case "/" + TargetDeiveName.红灯:
                     service = new RedLightService(_manager, socket);
                     break;
-                case "/yellow_light":
+                case "/" + TargetDeiveName.黄灯:
                     service = new YellowLightService(_manager, socket);
                     break;
-                case "/fan":
+                case "/" + TargetDeiveName.电风扇:
                     service = new FanService(_manager, socket);
                     break;
-                case "/engine":
+                case "/" + TargetDeiveName.电机:
                     service = new EngineService(_manager, socket);
                     break;
             }
@@ -44,13 +46,20 @@ namespace Fleck
         {
             string path = _socket.ConnectionInfo.Path;
             var manager = addConnectionManager(path, service_list);
-            WebSocketService service = NewServiceMap(manager, _socket);
-            manager.addMember(service);
+            if (null != manager)
+            {
+                WebSocketService service = NewServiceMap(manager, _socket);
+                manager.addMember(service);
+                manager.Open(_socket);
+            }
         }
         public void OnCloseWebSocket(IWebSocketConnection _socket)
         {
             var manager = GetWebSocketServiceManager(_socket.ConnectionInfo.Path, service_list);
-            manager.removeMember(_socket.ConnectionInfo.Id.ToString());
+            if (null != manager)
+            {
+                manager.removeMember(_socket.ConnectionInfo.Id.ToString());
+            }
         }
         public void OnMessage(string _message, IWebSocketConnection _socket)
         {
@@ -62,7 +71,15 @@ namespace Fleck
                 manager.OnMessage(_message, _socket);
             }
         }
-
+        public void Send(string _message)
+        {
+            command cmd_temp = (command)JsonConvert.DeserializeObject(_message, typeof(command));
+            var manager = GetWebSocketServiceManager("/" + cmd_temp.TargetDevice, service_list);
+            if (manager != null)
+            {
+                manager.Send(_message, cmd_temp.id);
+            }
+        }
         public WebSocketServiceManager GetWebSocketServiceManager(string name, List<WebSocketServiceManager> groupList)
         {
             WebSocketServiceManager manager = groupList.Find((_group) =>

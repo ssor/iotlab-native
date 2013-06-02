@@ -15,6 +15,9 @@ using com.google.zxing.common;
 using com.google.zxing;
 using System.Threading;
 using Fleck;
+using System.Text.RegularExpressions;
+using WebSocketSharp;
+using Newtonsoft.Json;
 
 namespace wsServer
 {
@@ -22,9 +25,12 @@ namespace wsServer
     {
         string deviceIP = string.Empty;
         //WebSocketServer wssv = null;
-        string url = "ws://localhost:4649";
-        WebSocketServer server =null; 
+        string FMServerUrl = "ws://localhost:4650";
+        string MCServerUrl = "ws://localhost:4649";
+        WebSocketServer MCserver = null;
+        WebSocketServer FMserver = null;//功能模块服务
         ServiceHost host = new ServiceHost();
+        //WebSocket ws = null;
         public serverForm()
         {
             InitializeComponent();
@@ -35,19 +41,15 @@ namespace wsServer
             this.button2.Enabled = false;
 
             this.deviceIP = Program.GetLocalIP4();
-
+            this.txtIP.Text = this.deviceIP;
             this.Shown += serverForm_Shown;
         }
 
         void serverForm_Shown(object sender, EventArgs e)
         {
-            string content = "http://" + this.deviceIP + ":9901/index.php";
-            this.txtQRcode.Text = content;
-            setQRcode(content);
-
-            //检查设备状态
-            //检查设备状态(Program.getRemoteIPEndPoint());
-
+            //string content = "http://" + this.deviceIP + ":9901/index.php";
+            //this.txtQRcode.Text = content;
+            //setQRcode(content);
 
         }
         void setQRcode(string content)
@@ -88,46 +90,68 @@ namespace wsServer
             //else
             //    funcInvoke(log);
         }
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender1, EventArgs e1)
         {
-            //wssv = new WebSocketServer(4649);
-            //wssv.AddWebSocketService<Echo>("/Echo");
-            //wssv.AddWebSocketService<GPSService>("/gps");
-            //wssv.AddWebSocketService<UHFService>("/uhf");
-            //wssv.AddWebSocketService<GreenLightService>("/green_light");
-            //wssv.AddWebSocketService<RedLightService>("/red_light");
-            //wssv.AddWebSocketService<YellowLightService>("/yellow_light");
-            //wssv.AddWebSocketService<FanService>("/fan");
-            //wssv.AddWebSocketService<EngineService>("/engine");
-            //wssv.Start();
-            server = new WebSocketServer(url);
-            server.Start(socket =>
+            try
             {
-                socket.OnOpen = () =>
+                MCserver = new WebSocketServer(MCServerUrl);
+                MCserver.Start(socket =>
                 {
-                    host.OnOpenWebSocket(socket);
-                };
-                socket.OnClose = () =>
-                {
-                    host.OnCloseWebSocket(socket);
-                };
-                socket.OnMessage = message =>
-                {
-                    host.OnMessage(message, socket);
-                };
-            });
-            this.initial_udp_server(Program.inputPort);
-            检查设备状态(Program.getRemoteIPEndPoint(), 3000);
+                    socket.OnOpen = () =>
+                    {
+                        host.OnOpenWebSocket(socket);
+                    };
+                    socket.OnClose = () =>
+                    {
+                        host.OnCloseWebSocket(socket);
+                    };
+                    socket.OnMessage = message =>
+                    {
+                        host.OnMessage(message, socket);
+                    };
+                });
 
-            this.button2.Enabled = true;
-            this.button1.Enabled = false;
+
+                FMserver = new WebSocketServer(FMServerUrl);
+                FMserver.Start(socket =>
+                {
+                    socket.OnOpen = () =>
+                    {
+                        FuncModuleManager.addClient(socket);
+                    };
+                    socket.OnClose = () =>
+                    {
+                        FuncModuleManager.removeClient(socket);
+                    };
+                    socket.OnMessage = message =>
+                    {
+                        Debug.WriteLine("*****  FM Client Message  => " + message);
+                        host.Send(message);
+                    };
+                    socket.OnError = (error) =>
+                    {
+                        Debug.WriteLine("OnError => " + error.Data);
+                        FuncModuleManager.removeClient(socket);
+                    };
+                });
+
+                //this.initial_udp_server(Program.inputPort);
+                //检查设备状态(Program.getRemoteIPEndPoint(), 3000);
+
+                this.button2.Enabled = true;
+                this.button1.Enabled = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             //wssv.Stop();
-            server.Dispose();
-            server = null;
+            MCserver.Dispose();
+            MCserver = null;
             if (serverSocket != null)
             {
                 serverSocket.Close();

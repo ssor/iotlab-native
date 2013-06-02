@@ -91,6 +91,7 @@
       <DependentUpon>frmProtocolTest.cs</DependentUpon>
     </Compile>
     <Compile Include="devices\IDeviceCommand.cs" />
+    <Compile Include="FuncModuleManager.cs" />
     <Compile Include="LightState.cs" />
     <Compile Include="moduleMannager.cs" />
     <Compile Include="Module\Chat.cs" />
@@ -129,6 +130,10 @@
     <ProjectReference Include="..\Fleck\Fleck.csproj">
       <Project>{8b12d929-afa9-4307-beff-2ed0f1070fee}</Project>
       <Name>Fleck</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\websocket-sharp\websocket-sharp.csproj">
+      <Project>{b357bac7-529e-4d81-a0d2-71041b19c8de}</Project>
+      <Name>websocket-sharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
