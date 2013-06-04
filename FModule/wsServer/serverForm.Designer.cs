@@ -41,8 +41,8 @@
             this.btnResetQrcode = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.txtIP = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.cmbIP = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -168,7 +168,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.txtIP);
+            this.groupBox3.Controls.Add(this.cmbIP);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.button1);
             this.groupBox3.Location = new System.Drawing.Point(19, -3);
@@ -176,13 +176,6 @@
             this.groupBox3.Size = new System.Drawing.Size(537, 124);
             this.groupBox3.TabIndex = 15;
             this.groupBox3.TabStop = false;
-            // 
-            // txtIP
-            // 
-            this.txtIP.Location = new System.Drawing.Point(198, 87);
-            this.txtIP.Name = "txtIP";
-            this.txtIP.Size = new System.Drawing.Size(168, 21);
-            this.txtIP.TabIndex = 0;
             // 
             // label1
             // 
@@ -192,6 +185,14 @@
             this.label1.Size = new System.Drawing.Size(65, 12);
             this.label1.TabIndex = 1;
             this.label1.Text = "服务器IP：";
+            // 
+            // cmbIP
+            // 
+            this.cmbIP.FormattingEnabled = true;
+            this.cmbIP.Location = new System.Drawing.Point(198, 92);
+            this.cmbIP.Name = "cmbIP";
+            this.cmbIP.Size = new System.Drawing.Size(159, 20);
+            this.cmbIP.TabIndex = 2;
             // 
             // serverForm
             // 
@@ -235,7 +236,7 @@
         private System.Windows.Forms.Button btnResetQrcode;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.TextBox txtIP;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cmbIP;
     }
 }

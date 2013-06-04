@@ -10,9 +10,10 @@ namespace Fleck
 {
     public interface IServicePlus
     {
-        void OnMessage(command _cmd);
-        void Send(command _cmd);
-        void Open();
+        void MCOnMessage(command _cmd);
+        void FMSend(command _cmd);
+        void MCOpen();
+        void OnCloseSocket();
     }
     //管理该路径下的所有链接
     public class WebSocketServiceManager
@@ -45,7 +46,7 @@ namespace Fleck
         {
             memberList.ForEach(s => { s.Send(data); });
         }
-        public void Send(string data, string _id)
+        public void FMSend(string data, string _id)
         {
             WebSocketService service = memberList.Find((_temp) =>
             {
@@ -54,7 +55,7 @@ namespace Fleck
             if (null != service)
             {
                 //service.Send(data);
-                ((IServicePlus)service).Send((command)JsonConvert.DeserializeObject(data, typeof(command)));
+                ((IServicePlus)service).FMSend((command)JsonConvert.DeserializeObject(data, typeof(command)));
             }
         }
         public void Open(IWebSocketConnection _socket)
@@ -65,7 +66,7 @@ namespace Fleck
             });
             if (service != null)
             {
-                ((IServicePlus)service).Open();
+                ((IServicePlus)service).MCOpen();
             }
         }
         public void removeMember(string _id)
@@ -81,7 +82,7 @@ namespace Fleck
                 Debug.WriteLine("***** MClient -- count => " + memberList.Count.ToString());
             }
         }
-        public void OnMessage(string message, IWebSocketConnection _socket)
+        public void MCOnMessage(string message, IWebSocketConnection _socket)
         {
             WebSocketService service = memberList.Find((_temp) =>
             {
@@ -92,7 +93,7 @@ namespace Fleck
                 command cmd_temp = (command)JsonConvert.DeserializeObject(message, typeof(command));
                 cmd_temp.id = _socket.ConnectionInfo.Id.ToString();
                 //service.OnMessage(JsonConvert.SerializeObject(cmd_temp));
-                ((IServicePlus)service).OnMessage(cmd_temp);
+                ((IServicePlus)service).MCOnMessage(cmd_temp);
             }
             //_socket.Send("private =>" + message);
             //Broadcast("public => " + message);

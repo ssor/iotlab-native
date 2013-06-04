@@ -17,11 +17,10 @@ namespace Fleck
             WebSocketService service = null;
             switch (_manager.managerName)
             {
-                case "/gps":
+                case "/" + TargetDeiveName.GPS:
                     service = new GPSService(_manager, socket);
-                    //service.
                     break;
-                case "/uhf":
+                case "/" + TargetDeiveName.UHF:
                     service = new UHFService(_manager, socket);
                     break;
                 case "/" + TargetDeiveName.绿灯:
@@ -42,7 +41,7 @@ namespace Fleck
             }
             return service;
         }
-        public void OnOpenWebSocket(IWebSocketConnection _socket)
+        public void OnOpenMCWebSocket(IWebSocketConnection _socket)
         {
             string path = _socket.ConnectionInfo.Path;
             var manager = addConnectionManager(path, service_list);
@@ -53,7 +52,7 @@ namespace Fleck
                 manager.Open(_socket);
             }
         }
-        public void OnCloseWebSocket(IWebSocketConnection _socket)
+        public void OnCloseMCWebSocket(IWebSocketConnection _socket)
         {
             var manager = GetWebSocketServiceManager(_socket.ConnectionInfo.Path, service_list);
             if (null != manager)
@@ -61,23 +60,30 @@ namespace Fleck
                 manager.removeMember(_socket.ConnectionInfo.Id.ToString());
             }
         }
-        public void OnMessage(string _message, IWebSocketConnection _socket)
+        public void OnMCMessage(string _message, IWebSocketConnection _socket)
         {
             string path = _socket.ConnectionInfo.Path;
 
             WebSocketServiceManager manager = GetWebSocketServiceManager(path, service_list);
             if (manager != null)
             {
-                manager.OnMessage(_message, _socket);
+                manager.MCOnMessage(_message, _socket);
             }
         }
-        public void Send(string _message)
+        public void FMSend(string _message)
         {
             command cmd_temp = (command)JsonConvert.DeserializeObject(_message, typeof(command));
             var manager = GetWebSocketServiceManager("/" + cmd_temp.TargetDevice, service_list);
             if (manager != null)
             {
-                manager.Send(_message, cmd_temp.id);
+                if (cmd_temp.IfBroadcast == "true")
+                {
+                    manager.Broadcast(_message);
+                }
+                else
+                {
+                    manager.FMSend(_message, cmd_temp.id);
+                }
             }
         }
         public WebSocketServiceManager GetWebSocketServiceManager(string name, List<WebSocketServiceManager> groupList)

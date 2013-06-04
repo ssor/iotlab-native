@@ -122,6 +122,8 @@
     <Compile Include="services.cs" />
     <Compile Include="RedLightDevice.cs" />
     <Compile Include="YellowLightDevice.cs" />
+    <Compile Include="GPSDevice.cs" />
+    <Compile Include="UHFDevice.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frmProtocolTest.resx">

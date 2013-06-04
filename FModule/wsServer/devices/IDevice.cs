@@ -12,5 +12,6 @@ namespace wsServer
         //void openDevice(command cmd, Action<command> callback);
         //void closeDevice(command cmd, Action<command> callback);
         void setDevice(ModuleCommand.command cmd, Action<ModuleCommand.command> callback);
+        string Name { get; }
     }
 }

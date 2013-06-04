@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace wsServer
 {
-    public class YellowLightDevice : IDevice
+    public class RedLightDevice : IDevice
     {
         Action<ModuleCommand.command> myCallBack = null;
         command myCommand = null;
@@ -28,6 +28,10 @@ namespace wsServer
             }
 
         }
+        public string Name
+        {
+            get { return TargetDeiveName.红灯; }
+        }
         void invokeCallback(command _cmd)
         {
             if (null != myCallBack)
@@ -45,7 +49,7 @@ namespace wsServer
             this.invokeCallback(myCommand);
             return;
 
-            DeviceCommandManager.executeCommand(enumDeviceCommand.关闭黄灯, ipEndPoint);
+            DeviceCommandManager.executeCommand(enumDeviceCommand.关闭红灯, ipEndPoint);
             检查灯状态(ipEndPoint);
         }
         void 打开灯(IPEndPoint ipEndPoint)
@@ -58,16 +62,16 @@ namespace wsServer
             this.invokeCallback(myCommand);
             return;
 
-            DeviceCommandManager.executeCommand(enumDeviceCommand.打开黄灯, ipEndPoint);
+            DeviceCommandManager.executeCommand(enumDeviceCommand.打开红灯, ipEndPoint);
             检查灯状态(ipEndPoint);
         }
         void 检查灯状态(IPEndPoint ipEndPoint)
         {
-            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询黄灯状态,
+            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询红灯状态,
                (data) =>
                {
-                   Debug.WriteLine("查询黄灯状态 => " + data);
-                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询黄灯状态);
+                   Debug.WriteLine("红灯状态 => " + data);
+                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询红灯状态);
                    if (null != idc)
                    {
                        LightState ls = idc.parseResponse(data);
@@ -93,7 +97,7 @@ namespace wsServer
                        }
                    }
                });
-            DeviceCommandManager.executeCommand(enumDeviceCommand.查询黄灯状态, ipEndPoint, 1000);
+            DeviceCommandManager.executeCommand(enumDeviceCommand.查询红灯状态, ipEndPoint, 1000);
         }
     }
 }

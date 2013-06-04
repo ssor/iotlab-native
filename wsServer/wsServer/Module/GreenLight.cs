@@ -39,7 +39,7 @@ namespace ModuleService
 
             //}
         }
-        public void Open()
+        public void MCOpen()
         {
             if (last_effective_command != null)
             {
@@ -47,7 +47,7 @@ namespace ModuleService
                 this.Send(recently_broadcast);
             }
         }
-        public void Send(command _cmd)
+        public void FMSend(command _cmd)
         {
             if (last_command != null && _cmd != null)
             {
@@ -80,7 +80,7 @@ namespace ModuleService
             }
 
         }
-        public void OnMessage(command _cmd)
+        public void MCOnMessage(command _cmd)
         {
             last_command = _cmd;
             string msg = JsonConvert.SerializeObject(_cmd);
@@ -118,7 +118,8 @@ namespace ModuleService
         {
             //base.OnClose(e);
         }
-
+        public void OnCloseSocket()
+        { }
         //void ¹Ø±ÕµÆ(IPEndPoint ipEndPoint)
         //{
         //    DeviceCommandManager.executeCommand(enumDeviceCommand.¹Ø±ÕÂÌµÆ, ipEndPoint);

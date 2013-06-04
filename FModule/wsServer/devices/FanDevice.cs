@@ -28,6 +28,10 @@ namespace wsServer
             }
 
         }
+        public string Name
+        {
+            get { return TargetDeiveName.电风扇; }
+        }
         void invokeCallback(command _cmd)
         {
             if (null != myCallBack)

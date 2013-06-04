@@ -16,7 +16,6 @@ using com.google.zxing;
 using System.Threading;
 using Fleck;
 using System.Text.RegularExpressions;
-using WebSocketSharp;
 using Newtonsoft.Json;
 
 namespace wsServer
@@ -99,15 +98,15 @@ namespace wsServer
                 {
                     socket.OnOpen = () =>
                     {
-                        host.OnOpenWebSocket(socket);
+                        host.OnOpenMCWebSocket(socket);
                     };
                     socket.OnClose = () =>
                     {
-                        host.OnCloseWebSocket(socket);
+                        host.OnCloseMCWebSocket(socket);
                     };
                     socket.OnMessage = message =>
                     {
-                        host.OnMessage(message, socket);
+                        host.OnMCMessage(message, socket);
                     };
                 });
 
@@ -126,7 +125,7 @@ namespace wsServer
                     socket.OnMessage = message =>
                     {
                         Debug.WriteLine("*****  FM Client Message  => " + message);
-                        host.Send(message);
+                        host.FMSend(message);
                     };
                     socket.OnError = (error) =>
                     {

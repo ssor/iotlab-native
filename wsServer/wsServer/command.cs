@@ -10,6 +10,8 @@ namespace ModuleCommand
         public const string 绿灯 = "green_light";
         public const string 红灯 = "red_light";
         public const string 黄灯 = "yellow_light";
+        public const string GPS = "gps";
+        public const string UHF = "uhf";
     }
     public class stateName
     {
@@ -23,6 +25,7 @@ namespace ModuleCommand
         public string Commander;//发起命令者
         public string TargetDevice;//目标硬件模块
         public string id;//socket连接的标识
+        public string IfBroadcast = "false";
 
         public command(string _name, string _para)
         {

@@ -23,7 +23,7 @@ namespace ModuleService
             this.Lng = lng;
         }
     }
-    public class GPSService : WebSocketService
+    public class GPSService : WebSocketService, IServicePlus
     {
         UDPServer updServer;
         NmeaInterpreter GPS;
@@ -41,13 +41,32 @@ namespace ModuleService
         public override void OnOpen()
         {
             //打开UDP端口，等待数据传入
-            this.updServer = UDPServer.getUDPServer(Program.GPS_UDP_Port);
-            updServer.evtReceived += new OnReceiveString(updServer_evtReceived);
-            updServer.startUDPListening();
+            //this.updServer = UDPServer.getUDPServer(Program.GPS_UDP_Port);
+            //updServer.evtReceived += new OnReceiveString(updServer_evtReceived);
+            //updServer.startUDPListening();
 
-            GPS = new NmeaInterpreter();
-            GPS.PositionReceived += new NmeaInterpreter.PositionReceivedEventHandler(GPS_PositionReceived);
+            //GPS = new NmeaInterpreter();
+            //GPS.PositionReceived += new NmeaInterpreter.PositionReceivedEventHandler(GPS_PositionReceived);
 
+        }
+        public void MCOpen()
+        {
+            command _cmd = new command(stateName.打开, "");
+            _cmd.TargetDevice = TargetDeiveName.GPS;
+            _cmd.id = this._context.Id.ToString();
+            string msg = JsonConvert.SerializeObject(_cmd);
+            Debug.WriteLine(string.Format("GPSService OnMessage => {0}", msg));
+            FuncModuleManager.OnMessage(msg);
+        }
+        public void FMSend(command _cmd)
+        {
+            this.Send(JsonConvert.SerializeObject(_cmd));
+        }
+        public void MCOnMessage(command _cmd)
+        {
+            string msg = JsonConvert.SerializeObject(_cmd);
+            Debug.WriteLine(string.Format("GPSService OnMessage => {0}", msg));
+            FuncModuleManager.OnMessage(msg);
         }
         private void GPS_PositionReceived(string Lat, string Lon)
         {
@@ -55,18 +74,8 @@ namespace ModuleService
             {
                 GpsPosition pos = new GpsPosition(Convert.ToString(OSGconv.deciLat), Convert.ToString(OSGconv.deciLon));
                 string strToSend = JsonConvert.SerializeObject(pos);
-                Debug.WriteLine("GPS_PositionReceived => " + strToSend);
+                Debug.WriteLine("GPSService => " + strToSend);
                 this.Send(strToSend);
-                //deleInvokeMapControlPos dele = delegate(string _lat, string _lon)
-                //{
-                //    this.txtLat.Text = _lat;
-                //    this.txtLng.Text = _lon;
-                //};
-                //if (this.stop_receive == false)
-                //{
-
-                //    this.Invoke(dele, (Convert.ToString(OSGconv.deciLat)), (Convert.ToString(OSGconv.deciLon)));
-                //}
             }
         }
         void updServer_evtReceived(string inbuff)
@@ -90,35 +99,33 @@ namespace ModuleService
         }
         public override void OnMessage(string msg)
         {
-            Debug.WriteLine(string.Format("GPS OnMessage => {0}", msg));
-            try
-            {
-                command cmd = (command)JsonConvert.DeserializeObject(msg, typeof(command));
-                Debug.WriteLine(cmd.print_string());
-                //Send(cmd.print_string());
-                switch (cmd.Name)
-                {
-                    case "open":
-                        Debug.WriteLine("打开GPS");
-                        //services.add_log("打开GPS");
-                        //moduleMannager.reset_module_state("gps", "open");
-                        break;
-                    case "close":
-                        Debug.WriteLine("关闭GPS");
-                        //services.add_log("关闭GPS");
-                        //moduleMannager.reset_module_state("gps", "close");
-                        break;
-                }
-            }
-            catch
-            {
-                Debug.WriteLine("parse error!");
-            }
+            //Debug.WriteLine(string.Format("GPS OnMessage => {0}", msg));
+            //try
+            //{
+            //    command cmd = (command)JsonConvert.DeserializeObject(msg, typeof(command));
+            //    Debug.WriteLine(cmd.print_string());
+            //    switch (cmd.Name)
+            //    {
+            //        case "open":
+            //            Debug.WriteLine("打开GPS");
+            //            break;
+            //        case "close":
+            //            Debug.WriteLine("关闭GPS");
+            //            break;
+            //    }
+            //}
+            //catch
+            //{
+            //    Debug.WriteLine("parse error!");
+            //}
         }
         public override void OnClose()
         {
-            this.updServer.evtReceived -= updServer_evtReceived;
             //base.OnClose(e);
+        }
+        public void OnCloseSocket()
+        {
+
         }
     }
 }

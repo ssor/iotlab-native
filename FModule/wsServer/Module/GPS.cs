@@ -12,17 +12,7 @@ using wsServer;
 
 namespace ModuleService
 {
-    public class GpsPosition
-    {
-        public string Lat;
-        public string Lng;
-        public GpsPosition() { }
-        public GpsPosition(string lat, string lng)
-        {
-            this.Lat = lat;
-            this.Lng = lng;
-        }
-    }
+
     public class GPSService : WebSocketService
     {
         UDPServer updServer;

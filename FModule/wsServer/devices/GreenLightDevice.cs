@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace wsServer
 {
-    public class EngineDevice : IDevice
+    public class GreenLightDevice : IDevice
     {
         Action<ModuleCommand.command> myCallBack = null;
         command myCommand = null;
@@ -20,13 +20,17 @@ namespace wsServer
             switch (cmd.Name)
             {
                 case stateName.打开:
-                    打开电机(Program.getRemoteIPEndPoint());
+                    打开灯(Program.getRemoteIPEndPoint());
                     break;
                 case stateName.关闭:
-                    关闭电机(Program.getRemoteIPEndPoint());
+                    关闭灯(Program.getRemoteIPEndPoint());
                     break;
             }
 
+        }
+        public string Name
+        {
+            get { return TargetDeiveName.绿灯; }
         }
         void invokeCallback(command _cmd)
         {
@@ -35,7 +39,7 @@ namespace wsServer
                 myCallBack(_cmd);
             }
         }
-        void 关闭电机(IPEndPoint ipEndPoint)
+        void 关闭灯(IPEndPoint ipEndPoint)
         {
             if (myCommand != null)
             {
@@ -45,10 +49,10 @@ namespace wsServer
             this.invokeCallback(myCommand);
             return;
 
-            DeviceCommandManager.executeCommand(enumDeviceCommand.关闭电机, ipEndPoint);
-            检查电机状态(ipEndPoint);
+            DeviceCommandManager.executeCommand(enumDeviceCommand.关闭绿灯, ipEndPoint);
+            检查灯状态(ipEndPoint);
         }
-        void 打开电机(IPEndPoint ipEndPoint)
+        void 打开灯(IPEndPoint ipEndPoint)
         {
             if (myCommand != null)
             {
@@ -58,16 +62,16 @@ namespace wsServer
             this.invokeCallback(myCommand);
             return;
 
-            DeviceCommandManager.executeCommand(enumDeviceCommand.打开电机, ipEndPoint);
-            检查电机状态(ipEndPoint);
+            DeviceCommandManager.executeCommand(enumDeviceCommand.打开绿灯, ipEndPoint);
+            检查灯状态(ipEndPoint);
         }
-        void 检查电机状态(IPEndPoint ipEndPoint)
+        void 检查灯状态(IPEndPoint ipEndPoint)
         {
-            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询电机状态,
+            DeviceCommandManager.setCommandCallback(enumDeviceCommand.查询绿灯状态,
                (data) =>
                {
-                   Debug.WriteLine("检查电机状态 => " + data);
-                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询电机状态);
+                   Debug.WriteLine("绿灯状态 => " + data);
+                   IDeviceCommand idc = DeviceCommandManager.getDeivceCommand(enumDeviceCommand.查询绿灯状态);
                    if (null != idc)
                    {
                        LightState ls = idc.parseResponse(data);
@@ -93,7 +97,7 @@ namespace wsServer
                        }
                    }
                });
-            DeviceCommandManager.executeCommand(enumDeviceCommand.查询电机状态, ipEndPoint, 1000);
+            DeviceCommandManager.executeCommand(enumDeviceCommand.查询绿灯状态, ipEndPoint, 1000);
         }
     }
 }

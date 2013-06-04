@@ -37,7 +37,8 @@ namespace wsServer
             this.button2.Enabled = false;
 
             this.deviceIP = Program.GetLocalIP4();
-            this.txtIP.Text = this.deviceIP;
+            this.cmbIP.Text = this.deviceIP;
+            this.cmbIP.Items.Add("111.67.197.251");
             this.Shown += serverForm_Shown;
         }
 
@@ -87,11 +88,20 @@ namespace wsServer
             //    funcInvoke(log);
         }
         WebSocket ws = null;
+        List<IDevice> deviceList = new List<IDevice>();
+        IDevice findDevice(string name)
+        {
+            IDevice device = deviceList.Find(_temp =>
+            {
+                return _temp.Name == name;
+            });
+            return device;
+        }
         private void button1_Click(object sender1, EventArgs e1)
         {
             try
             {
-                string destIP = this.txtIP.Text;
+                string destIP = this.cmbIP.Text;
                 string patternIp = @"\b(([01]?\d?\d|2[0-4]\d|25[0-5])\.){3}([01]?\d?\d|2[0-4]\d|25[0-5])\b";
                 if (destIP.Length <= 0 || !Regex.IsMatch(destIP, patternIp))
                 {
@@ -111,27 +121,37 @@ namespace wsServer
                     string msg = e.Data;
                     Debug.WriteLine("OnMessage => " + msg);
                     command cmd_temp = (command)JsonConvert.DeserializeObject(msg, typeof(command));
-                    IDevice device = null;
-                    switch (cmd_temp.TargetDevice)
+                    IDevice device = findDevice(cmd_temp.TargetDevice);
+                    if (device == null)
                     {
-                        case TargetDeiveName.电风扇:
-                            device = new FanDevice();
-                            break;
-                        case TargetDeiveName.电机:
-                            device = new EngineDevice();
-                            break;
-                        case TargetDeiveName.绿灯:
-                            device = new GreenLightDevice();
-                            break;
-                        case TargetDeiveName.红灯:
-                            device = new RedLightDevice();
-                            break;
-                        case TargetDeiveName.黄灯:
-                            device = new YellowLightDevice();
-                            break;
+                        switch (cmd_temp.TargetDevice)
+                        {
+                            case TargetDeiveName.电风扇:
+                                device = new FanDevice();
+                                break;
+                            case TargetDeiveName.电机:
+                                device = new EngineDevice();
+                                break;
+                            case TargetDeiveName.绿灯:
+                                device = new GreenLightDevice();
+                                break;
+                            case TargetDeiveName.红灯:
+                                device = new RedLightDevice();
+                                break;
+                            case TargetDeiveName.黄灯:
+                                device = new YellowLightDevice();
+                                break;
+                            case TargetDeiveName.GPS:
+                                device = new GPSDevice();
+                                break;
+                            case TargetDeiveName.UHF:
+                                device = new UHFDevice();
+                                break;
+                        }
                     }
                     if (device != null)
                     {
+                        deviceList.Add(device);
                         device.setDevice(cmd_temp, cmd =>
                         {
                             string back = JsonConvert.SerializeObject(cmd);
