@@ -9,8 +9,8 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>wsServer</RootNamespace>
-    <AssemblyName>物联网控制中间件V1</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>物联网云服务中间件</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StartupObject>
     </StartupObject>
@@ -40,7 +40,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -91,6 +91,7 @@
       <DependentUpon>frmProtocolTest.cs</DependentUpon>
     </Compile>
     <Compile Include="devices\IDeviceCommand.cs" />
+    <Compile Include="FuncModuleManager.cs" />
     <Compile Include="LightState.cs" />
     <Compile Include="moduleMannager.cs" />
     <Compile Include="Module\Chat.cs" />
