@@ -506,6 +506,7 @@ namespace wsServer
                 MessageBox.Show(e.Message);
             }
         }
+        StringBuilder builder = new StringBuilder();
         private void OnReceive(IAsyncResult ar)
         {
 
@@ -515,7 +516,6 @@ namespace wsServer
                 EndPoint epSender = (EndPoint)ipeSender;
 
                 serverSocket.EndReceiveFrom(ar, ref epSender);
-                StringBuilder builder = new StringBuilder();
                 if (true)//16进制
                 {
                     //依次的拼接出16进制字符串
@@ -536,14 +536,26 @@ namespace wsServer
 
                 Array.Clear(byteData, 0, byteData.Length);
                 string strReceived = builder.ToString();
+                Debug.WriteLine("*****  UDP <= " + strReceived);
+                parseCommand(strReceived);
                 //int i = strReceived.IndexOf("\0");
-                if (strReceived.Length > 0)
+                //if (strReceived.Length > 0)
                 {
-                    IDeviceCommand cmd = DeviceCommandManager.getDeivceCommandWithResponseOf(strReceived);
-                    if (cmd != null)
-                    {
-                        cmd.callBack(strReceived);
-                    }
+                    //for (int i = 0; i < strReceived.Length; i += 2)
+                    //{
+                    //    string temp = strReceived.Substring(0, i + 2);
+                    //    IDeviceCommand cmd = DeviceCommandManager.getDeivceCommandWithResponseOf(temp);
+                    //    if (cmd != null)
+                    //    {
+                    //        cmd.callBack(strReceived);
+                    //    }
+                    //}
+                    //IDeviceCommand cmd = DeviceCommandManager.getDeivceCommandWithResponseOf(strReceived);
+                    //if (cmd != null)
+                    //{
+
+                    //    cmd.callBack(strReceived);
+                    //}
                 }
 
                 //Start listening to the message send by the user
@@ -556,6 +568,32 @@ namespace wsServer
                 Debug.WriteLine(
                     string.Format("UDPServer.OnReceive  -> error = {0}"
                     , ex.Message));
+            }
+        }
+
+        void parseCommand(string strReceived)
+        {
+            if (strReceived.Length <= 0 || (strReceived.Length % 2) != 0)
+            {
+                return;
+            }
+            for (int i = 0; i < strReceived.Length; i += 2)
+            {
+                string temp = strReceived.Substring(0, i + 2);
+                IDeviceCommand cmd = DeviceCommandManager.getDeivceCommandWithResponseOf(temp);
+                if (cmd != null)
+                {
+                    Debug.WriteLine("parseCommand ok  => " + temp);
+                    cmd.callBack(temp);
+
+                    builder.Remove(0, i + 2);
+                    parseCommand(strReceived.Substring(i + 1));
+                }
+                else
+                {
+                    Debug.WriteLine("parseCommand null  => " + temp);
+
+                }
             }
         }
         #endregion
