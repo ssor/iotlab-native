@@ -41,26 +41,26 @@ namespace wsServer
         }
         void 关闭灯(IPEndPoint ipEndPoint)
         {
-            if (myCommand != null)
-            {
-                myCommand.Name = stateName.关闭;
-                //myCommand.Name = stateName.打开;
-            }
-            this.invokeCallback(myCommand);
-            return;
+            //if (myCommand != null)
+            //{
+            //    myCommand.Name = stateName.关闭;
+            //    //myCommand.Name = stateName.打开;
+            //}
+            //this.invokeCallback(myCommand);
+            //return;
 
             DeviceCommandManager.executeCommand(enumDeviceCommand.关闭绿灯, ipEndPoint);
             检查灯状态(ipEndPoint);
         }
         void 打开灯(IPEndPoint ipEndPoint)
         {
-            if (myCommand != null)
-            {
-                myCommand.Name = stateName.打开;
-                //myCommand.Name = stateName.关闭;
-            }
-            this.invokeCallback(myCommand);
-            return;
+            //if (myCommand != null)
+            //{
+            //    myCommand.Name = stateName.打开;
+            //    //myCommand.Name = stateName.关闭;
+            //}
+            //this.invokeCallback(myCommand);
+            //return;
 
             DeviceCommandManager.executeCommand(enumDeviceCommand.打开绿灯, ipEndPoint);
             检查灯状态(ipEndPoint);

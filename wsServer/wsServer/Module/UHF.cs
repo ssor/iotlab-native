@@ -15,7 +15,6 @@ namespace ModuleService
 
     public class UHFService : WebSocketService, IServicePlus
     {
-        UDPServer updServer;
         TDJ_RFIDHelper rfid_helper;
         public UHFService(WebSocketServiceManager _manager, IWebSocketConnection socket)
         {
@@ -67,11 +66,11 @@ namespace ModuleService
         }
         public override void OnClose()
         {
-            if (this.updServer != null)
-            {
-                this.updServer.evtReceived -= updServer_evtReceived;
-                //base.OnClose(e);
-            }
+            //if (this.updServer != null)
+            //{
+            //    this.updServer.evtReceived -= updServer_evtReceived;
+            //    //base.OnClose(e);
+            //}
         }
 
         public void MCOnMessage(command _cmd)

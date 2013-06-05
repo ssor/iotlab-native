@@ -25,8 +25,6 @@ namespace ModuleService
     }
     public class GPSService : WebSocketService, IServicePlus
     {
-        UDPServer updServer;
-        NmeaInterpreter GPS;
         NMEA2OSG OSGconv = new NMEA2OSG();
         StringBuilder sbuilder = new StringBuilder();
 
@@ -78,25 +76,25 @@ namespace ModuleService
                 this.Send(strToSend);
             }
         }
-        void updServer_evtReceived(string inbuff)
-        {
-            this.sbuilder.Append(inbuff);
-            if (sbuilder.Length > 0)
-            {
-                string temp = sbuilder.ToString();
-                int lastIndex = temp.LastIndexOf("$");
-                if (lastIndex >= 0 && lastIndex != temp.IndexOf("$"))//至少有两个符号
-                {
+        //void updServer_evtReceived(string inbuff)
+        //{
+        //    this.sbuilder.Append(inbuff);
+        //    if (sbuilder.Length > 0)
+        //    {
+        //        string temp = sbuilder.ToString();
+        //        int lastIndex = temp.LastIndexOf("$");
+        //        if (lastIndex >= 0 && lastIndex != temp.IndexOf("$"))//至少有两个符号
+        //        {
 
-                    string[] gpsString = temp.Substring(0, lastIndex).Split('$');
-                    foreach (string item in gpsString)
-                    {
-                        Debug.WriteLine("updServer_evtReceived => " + item);
-                        GPS.Parse("$" + item);
-                    }
-                }
-            }
-        }
+        //            string[] gpsString = temp.Substring(0, lastIndex).Split('$');
+        //            foreach (string item in gpsString)
+        //            {
+        //                Debug.WriteLine("updServer_evtReceived => " + item);
+        //                GPS.Parse("$" + item);
+        //            }
+        //        }
+        //    }
+        //}
         public override void OnMessage(string msg)
         {
             //Debug.WriteLine(string.Format("GPS OnMessage => {0}", msg));

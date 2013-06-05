@@ -39,15 +39,21 @@ namespace wsServer
             this.deviceIP = Program.GetLocalIP4();
             this.cmbIP.Text = this.deviceIP;
             this.cmbIP.Items.Add("111.67.197.251");
+            this.cmbIP.Items.Add(this.deviceIP);
             this.Shown += serverForm_Shown;
+            this.cmbIP.SelectedIndexChanged += cmbIP_SelectedIndexChanged;
+        }
+
+        void cmbIP_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string content = "http://" + this.cmbIP.Text + ":9901/index.php";
+            this.txtQRcode.Text = content;
+            setQRcode(content);
         }
 
         void serverForm_Shown(object sender, EventArgs e)
         {
-            //string content = "http://" + this.deviceIP + ":9901/index.php";
-            //this.txtQRcode.Text = content;
-            //setQRcode(content);
-
+            this.cmbIP.SelectedIndex = 0;
         }
         void setQRcode(string content)
         {
@@ -177,8 +183,11 @@ namespace wsServer
                 ws.Connect();
 
 
-
-
+                //command cmd1 = new command(stateName.打开, "");
+                //cmd1.TargetDevice = TargetDeiveName.绿灯;
+                //cmd1.Initializing = "true";
+                //this.initialCommandList.Add(cmd1);
+                //sendInitialInfo(ws);
                 //MCserver = new WebSocketServer(MCServerUrl);
                 //MCserver.Start(socket =>
                 //{
@@ -197,8 +206,8 @@ namespace wsServer
                 //});
 
 
-                //this.initial_udp_server(Program.inputPort);
-                //检查设备状态(Program.getRemoteIPEndPoint(), 3000);
+                this.initial_udp_server(Program.inputPort);
+                检查设备状态(Program.getRemoteIPEndPoint(), 3000);
 
                 this.button2.Enabled = true;
                 this.button1.Enabled = false;
@@ -207,6 +216,16 @@ namespace wsServer
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+        List<command> initialCommandList = new List<command>();
+        private void sendInitialInfo(WebSocket ws, command command)
+        {
+            ws.Send(JsonConvert.SerializeObject(command));
+
+            //initialCommandList.ForEach(command =>
+            //{
+            //    ws.Send(JsonConvert.SerializeObject(command));
+            //});
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -287,7 +306,11 @@ namespace wsServer
                                string log = "红灯已经打开";
                                this.add_log(log);
                                Debug.WriteLine(log);
-                               RedLightService.last_effective_command = new command("open", "");
+                               //RedLightService.last_effective_command = new command("open", "");
+                               command cmd = new command(stateName.打开, "");
+                               cmd.TargetDevice = TargetDeiveName.红灯;
+                               cmd.Initializing = "true";
+                               this.sendInitialInfo(ws, cmd);
                            }
                            else
                            {
@@ -295,7 +318,7 @@ namespace wsServer
                                this.add_log(log);
                                Debug.WriteLine(log);
 
-                               RedLightService.last_effective_command = new command("close", "");
+                               //RedLightService.last_effective_command = new command("close", "");
                            }
                        }
                    }
@@ -319,7 +342,11 @@ namespace wsServer
                                string log = "黄灯已经打开";
                                this.add_log(log);
                                Debug.WriteLine(log);
-                               YellowLightService.last_effective_command = new command("open", "");
+                               //YellowLightService.last_effective_command = new command("open", "");
+                               command cmd = new command(stateName.打开, "");
+                               cmd.TargetDevice = TargetDeiveName.黄灯;
+                               cmd.Initializing = "true";
+                               this.sendInitialInfo(ws, cmd);
                            }
                            else
                            {
@@ -351,7 +378,11 @@ namespace wsServer
                                string log = "绿灯已经打开";
                                this.add_log(log);
                                Debug.WriteLine(log);
-                               GreenLightService.last_effective_command = new command("open", "");
+                               //GreenLightService.last_effective_command = new command("open", "");
+                               command cmd = new command(stateName.打开, "");
+                               cmd.TargetDevice = TargetDeiveName.绿灯;
+                               cmd.Initializing = "true";
+                               this.sendInitialInfo(ws, cmd);
                            }
                            else
                            {
@@ -382,7 +413,11 @@ namespace wsServer
                                string log = "电机已经打开";
                                this.add_log(log);
                                Debug.WriteLine(log);
-                               EngineService.last_effective_command = new command("open", "");
+                               //EngineService.last_effective_command = new command("open", "");
+                               command cmd = new command(stateName.打开, "");
+                               cmd.TargetDevice = TargetDeiveName.电机;
+                               cmd.Initializing = "true";
+                               this.sendInitialInfo(ws, cmd);
                            }
                            else
                            {
@@ -413,7 +448,11 @@ namespace wsServer
                                string log = "风扇已经打开";
                                this.add_log(log);
                                Debug.WriteLine(log);
-                               FanService.last_effective_command = new command("open", "");
+                               //FanService.last_effective_command = new command("open", "");
+                               command cmd = new command(stateName.打开, "");
+                               cmd.TargetDevice = TargetDeiveName.电风扇;
+                               cmd.Initializing = "true";
+                               this.sendInitialInfo(ws, cmd);
                            }
                            else
                            {

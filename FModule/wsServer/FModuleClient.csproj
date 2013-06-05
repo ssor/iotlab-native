@@ -82,7 +82,7 @@
     <Compile Include="command.cs" />
     <Compile Include="devices\DeviceCommand.cs" />
     <Compile Include="devices\FanDevice.cs" />
-    <Compile Include="EngineDevice.cs" />
+    <Compile Include="devices\EngineDevice.cs" />
     <Compile Include="fleck\ServiceHost.cs" />
     <Compile Include="fleck\WebSocketService.cs" />
     <Compile Include="fleck\WebSocketServiceManager.cs" />
@@ -94,7 +94,7 @@
     </Compile>
     <Compile Include="devices\IDeviceCommand.cs" />
     <Compile Include="devices\IDevice.cs" />
-    <Compile Include="GreenLightDevice.cs" />
+    <Compile Include="devices\GreenLightDevice.cs" />
     <Compile Include="LightState.cs" />
     <Compile Include="moduleMannager.cs" />
     <Compile Include="Module\Chat.cs" />
@@ -120,10 +120,10 @@
       <DependentUpon>serverForm.cs</DependentUpon>
     </Compile>
     <Compile Include="services.cs" />
-    <Compile Include="RedLightDevice.cs" />
-    <Compile Include="YellowLightDevice.cs" />
-    <Compile Include="GPSDevice.cs" />
-    <Compile Include="UHFDevice.cs" />
+    <Compile Include="devices\RedLightDevice.cs" />
+    <Compile Include="devices\YellowLightDevice.cs" />
+    <Compile Include="devices\GPSDevice.cs" />
+    <Compile Include="devices\UHFDevice.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frmProtocolTest.resx">

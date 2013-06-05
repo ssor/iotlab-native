@@ -69,6 +69,7 @@ namespace wsServer
                 if (myCommand != null)
                 {
                     myCommand.Para = strToSend;
+                    myCommand.IfBroadcast = "true";
                 }
                 this.invokeCallback(myCommand);
             }

@@ -73,9 +73,17 @@ namespace Fleck
         public void FMSend(string _message)
         {
             command cmd_temp = (command)JsonConvert.DeserializeObject(_message, typeof(command));
+            if (cmd_temp != null && cmd_temp.Initializing == "true")
+            {
+                WebSocketServiceManager.Broadcast2LocalService(cmd_temp);
+                return;
+            }
+
             var manager = GetWebSocketServiceManager("/" + cmd_temp.TargetDevice, service_list);
             if (manager != null)
             {
+
+
                 if (cmd_temp.IfBroadcast == "true")
                 {
                     manager.Broadcast(_message);

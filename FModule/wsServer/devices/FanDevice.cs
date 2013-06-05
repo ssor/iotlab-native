@@ -41,26 +41,26 @@ namespace wsServer
         }
         void 关闭风扇(IPEndPoint ipEndPoint)
         {
-            if (myCommand != null)
-            {
-                myCommand.Name = stateName.关闭;
-                //myCommand.Name = stateName.打开;
-            }
-            this.invokeCallback(myCommand);
-            return;
+            //if (myCommand != null)
+            //{
+            //    myCommand.Name = stateName.关闭;
+            //    //myCommand.Name = stateName.打开;
+            //}
+            //this.invokeCallback(myCommand);
+            //return;
 
             DeviceCommandManager.executeCommand(enumDeviceCommand.关闭风扇, ipEndPoint);
             检查风扇状态(ipEndPoint);
         }
         void 打开风扇(IPEndPoint ipEndPoint)
         {
-            if (myCommand != null)
-            {
-                myCommand.Name = stateName.打开;
-                //myCommand.Name = stateName.关闭;
-            }
-            this.invokeCallback(myCommand);
-            return;
+            //if (myCommand != null)
+            //{
+            //    myCommand.Name = stateName.打开;
+            //    //myCommand.Name = stateName.关闭;
+            //}
+            //this.invokeCallback(myCommand);
+            //return;
 
 
             DeviceCommandManager.executeCommand(enumDeviceCommand.打开风扇, ipEndPoint);

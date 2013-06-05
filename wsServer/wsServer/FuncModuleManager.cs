@@ -1,4 +1,5 @@
 ﻿using Fleck;
+using ModuleService;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,8 +24,9 @@ namespace Fleck
             {
                 FModuleList.Remove(client);
             }
-            Debug.WriteLine("*****  FM Client --  => " + FModuleList.Count.ToString());
-
+            string log = "*****  FM Client --  => " + FModuleList.Count.ToString();
+            Debug.WriteLine(log);
+            services.showStateForm.add_log(log);
         }
         public static void addClient(IWebSocketConnection client)
         {
@@ -37,7 +39,9 @@ namespace Fleck
             {
                 FModuleList.Add(client);
             }
-            Debug.WriteLine("*****  FM Client ++  => " + FModuleList.Count.ToString());
+            string log = "*****  FM Client ++  => " + FModuleList.Count.ToString();
+            Debug.WriteLine(log);
+            services.showStateForm.add_log(log);
         }
 
         public static void OnMessage(string data)

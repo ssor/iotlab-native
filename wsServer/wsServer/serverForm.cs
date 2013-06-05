@@ -51,16 +51,16 @@ namespace wsServer
             //setQRcode(content);
 
         }
-        void setQRcode(string content)
-        {
-            int heigth = this.pictureBox1.Height;
-            int width = this.pictureBox1.Width;
-            BarcodeFormat format = BarcodeFormat.QR_CODE;
+        //void setQRcode(string content)
+        //{
+        //    int heigth = this.pictureBox1.Height;
+        //    int width = this.pictureBox1.Width;
+        //    BarcodeFormat format = BarcodeFormat.QR_CODE;
 
-            ByteMatrix byteMatrix = new MultiFormatWriter().encode(content, format, width, heigth);
-            Bitmap bitmap = toBitmap(byteMatrix);
-            pictureBox1.Image = bitmap;
-        }
+        //    ByteMatrix byteMatrix = new MultiFormatWriter().encode(content, format, width, heigth);
+        //    Bitmap bitmap = toBitmap(byteMatrix);
+        //    pictureBox1.Image = bitmap;
+        //}
         public Bitmap toBitmap(ByteMatrix matrix)
         {
             int width = matrix.Width;
@@ -151,11 +151,11 @@ namespace wsServer
             //wssv.Stop();
             MCserver.Dispose();
             MCserver = null;
-            if (serverSocket != null)
-            {
-                serverSocket.Close();
-                serverSocket = null;
-            }
+            //if (serverSocket != null)
+            //{
+            //    serverSocket.Close();
+            //    serverSocket = null;
+            //}
             this.button2.Enabled = false;
             this.button1.Enabled = true;
         }
@@ -180,14 +180,14 @@ namespace wsServer
 
         private void btnResetQrcode_Click(object sender, EventArgs e)
         {
-            if (txtQRcode.Text == string.Empty)
-            {
-                return;
-            }
-            else
-            {
-                setQRcode(txtQRcode.Text);
-            }
+            //if (txtQRcode.Text == string.Empty)
+            //{
+            //    return;
+            //}
+            //else
+            //{
+            //    setQRcode(txtQRcode.Text);
+            //}
         }
 
         #region 设备检测
@@ -369,93 +369,93 @@ namespace wsServer
 
 
         #region UDP 监听
-        Socket serverSocket = null; //The main server socket
-        byte[] byteData = new byte[1024];
+        //Socket serverSocket = null; //The main server socket
+        //byte[] byteData = new byte[1024];
 
-        void initial_udp_server(int port)
-        {
-            try
-            {
-                serverSocket = new Socket(AddressFamily.InterNetwork,
-                            SocketType.Dgram, ProtocolType.Udp);
-                IPAddress ip = IPAddress.Parse(Program.GetLocalIP4());
-                IPEndPoint ipEndPoint = new IPEndPoint(ip, port);
-                //Bind this address to the server
-                serverSocket.Bind(ipEndPoint);
-                //防止客户端强行中断造成的异常
-                long IOC_IN = 0x80000000;
-                long IOC_VENDOR = 0x18000000;
-                long SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
+        //void initial_udp_server(int port)
+        //{
+        //    try
+        //    {
+        //        serverSocket = new Socket(AddressFamily.InterNetwork,
+        //                    SocketType.Dgram, ProtocolType.Udp);
+        //        IPAddress ip = IPAddress.Parse(Program.GetLocalIP4());
+        //        IPEndPoint ipEndPoint = new IPEndPoint(ip, port);
+        //        //Bind this address to the server
+        //        serverSocket.Bind(ipEndPoint);
+        //        //防止客户端强行中断造成的异常
+        //        long IOC_IN = 0x80000000;
+        //        long IOC_VENDOR = 0x18000000;
+        //        long SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
 
-                byte[] optionInValue = { Convert.ToByte(false) };
-                byte[] optionOutValue = new byte[4];
-                serverSocket.IOControl((int)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
+        //        byte[] optionInValue = { Convert.ToByte(false) };
+        //        byte[] optionOutValue = new byte[4];
+        //        serverSocket.IOControl((int)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
 
-                IPEndPoint ipeSender = new IPEndPoint(IPAddress.Any, 0);
-                //The epSender identifies the incoming clients
-                EndPoint epSender = (EndPoint)ipeSender;
+        //        IPEndPoint ipeSender = new IPEndPoint(IPAddress.Any, 0);
+        //        //The epSender identifies the incoming clients
+        //        EndPoint epSender = (EndPoint)ipeSender;
 
-                //Start receiving data
-                serverSocket.BeginReceiveFrom(byteData, 0, byteData.Length,
-                    SocketFlags.None, ref epSender, new AsyncCallback(OnReceive), epSender);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-        }
-        private void OnReceive(IAsyncResult ar)
-        {
+        //        //Start receiving data
+        //        serverSocket.BeginReceiveFrom(byteData, 0, byteData.Length,
+        //            SocketFlags.None, ref epSender, new AsyncCallback(OnReceive), epSender);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        MessageBox.Show(e.Message);
+        //    }
+        //}
+        //private void OnReceive(IAsyncResult ar)
+        //{
 
-            try
-            {
-                IPEndPoint ipeSender = new IPEndPoint(IPAddress.Any, 0);
-                EndPoint epSender = (EndPoint)ipeSender;
+        //    try
+        //    {
+        //        IPEndPoint ipeSender = new IPEndPoint(IPAddress.Any, 0);
+        //        EndPoint epSender = (EndPoint)ipeSender;
 
-                serverSocket.EndReceiveFrom(ar, ref epSender);
-                StringBuilder builder = new StringBuilder();
-                if (true)//16进制
-                {
-                    //依次的拼接出16进制字符串
-                    foreach (byte b in byteData)
-                    {
-                        if (b > 0)
-                        {
-                            builder.Append(b.ToString("X2"));
-                        }
-                    }
+        //        serverSocket.EndReceiveFrom(ar, ref epSender);
+        //        StringBuilder builder = new StringBuilder();
+        //        if (true)//16进制
+        //        {
+        //            //依次的拼接出16进制字符串
+        //            foreach (byte b in byteData)
+        //            {
+        //                if (b > 0)
+        //                {
+        //                    builder.Append(b.ToString("X2"));
+        //                }
+        //            }
 
-                }
-                else
-                {
-                    //直接按ASCII规则转换成字符串
-                    builder.Append(Encoding.ASCII.GetString(byteData));
-                }
+        //        }
+        //        else
+        //        {
+        //            //直接按ASCII规则转换成字符串
+        //            builder.Append(Encoding.ASCII.GetString(byteData));
+        //        }
 
-                Array.Clear(byteData, 0, byteData.Length);
-                string strReceived = builder.ToString();
-                //int i = strReceived.IndexOf("\0");
-                if (strReceived.Length > 0)
-                {
-                    IDeviceCommand cmd = DeviceCommandManager.getDeivceCommandWithResponseOf(strReceived);
-                    if (cmd != null)
-                    {
-                        cmd.callBack(strReceived);
-                    }
-                }
+        //        Array.Clear(byteData, 0, byteData.Length);
+        //        string strReceived = builder.ToString();
+        //        //int i = strReceived.IndexOf("\0");
+        //        if (strReceived.Length > 0)
+        //        {
+        //            IDeviceCommand cmd = DeviceCommandManager.getDeivceCommandWithResponseOf(strReceived);
+        //            if (cmd != null)
+        //            {
+        //                cmd.callBack(strReceived);
+        //            }
+        //        }
 
-                //Start listening to the message send by the user
-                serverSocket.BeginReceiveFrom(byteData, 0, byteData.Length, SocketFlags.None, ref epSender,
-                    new AsyncCallback(OnReceive), epSender);
+        //        //Start listening to the message send by the user
+        //        serverSocket.BeginReceiveFrom(byteData, 0, byteData.Length, SocketFlags.None, ref epSender,
+        //            new AsyncCallback(OnReceive), epSender);
 
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(
-                    string.Format("UDPServer.OnReceive  -> error = {0}"
-                    , ex.Message));
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine(
+        //            string.Format("UDPServer.OnReceive  -> error = {0}"
+        //            , ex.Message));
+        //    }
+        //}
         #endregion
 
     }

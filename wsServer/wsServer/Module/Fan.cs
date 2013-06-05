@@ -49,7 +49,9 @@ namespace ModuleService
         }
         public void FMSend(command _cmd)
         {
-            if (last_command != null && _cmd != null)
+            if (_cmd == null) return;
+
+            if (last_command != null)
             {
                 if (last_command.Name == _cmd.Name)
                 {
@@ -78,21 +80,6 @@ namespace ModuleService
                     _cmd.Para = "操作失败";
                     recently_broadcast = JsonConvert.SerializeObject(_cmd);
                     this.Send(recently_broadcast);//只通知本人
-
-                    //switch (_cmd.Name)
-                    //{
-                    //    case stateName.打开:
-                    //        //command ncOpen = new command("open", "操作失败");
-
-                    //        Debug.WriteLine("关闭风扇操作失败");
-                    //        break;
-                    //    case stateName.关闭:
-                    //        command ncClose = new command("close", "操作失败");
-                    //        recently_broadcast = JsonConvert.SerializeObject(ncClose);
-                    //        this.Send(recently_broadcast);
-                    //        Debug.WriteLine("打开风扇操作失败");
-                    //        break;
-                    //}
                 }
             }
 

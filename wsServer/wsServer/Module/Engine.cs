@@ -44,7 +44,9 @@ namespace ModuleService
         }
         public void FMSend(command _cmd)
         {
-            if (last_command != null && _cmd != null)
+            if (_cmd == null) return;
+
+            if (last_command != null)
             {
                 if (last_command.Name == _cmd.Name)
                 {

@@ -26,7 +26,7 @@ namespace ModuleCommand
         public string TargetDevice;//目标硬件模块
         public string id;//socket连接的标识
         public string IfBroadcast = "false";
-
+        public string Initializing = "false";
         public command(string _name, string _para)
         {
             this.Name = _name;
